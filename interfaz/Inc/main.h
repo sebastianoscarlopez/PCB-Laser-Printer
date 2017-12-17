@@ -70,7 +70,6 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
-void (*onReceive)(uint8_t*);
 
 /* USER CODE END Private defines */
 

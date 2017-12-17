@@ -40,9 +40,10 @@
 uint8_t RX_Buffer[RX_BUFFER_SIZE];
 
 /* Buffer after received data */
-#define UART_BUFFER_SIZE            3
+#define UART_BUFFER_SIZE		10
 uint8_t UART_Buffer[UART_BUFFER_SIZE];
 
+volatile uint8_t receiveOK = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -98,17 +99,16 @@ void USART2_IRQHandler(void)
 	uint8_t* ptr = RX_Buffer;
 	memcpy(&UART_Buffer[idxBuffer], ptr, RX_BUFFER_SIZE);
 	UART_Buffer[idxBuffer + RX_BUFFER_SIZE] = '\0';
-	HAL_UART_Receive_IT(&huart2, RX_Buffer, RX_BUFFER_SIZE);
 	if(strlen(UART_Buffer) < UART_BUFFER_SIZE)
 	{
 		continue_receive();
 	} else {
-		(*onReceive)(UART_Buffer);
+		receiveOK = 1;
 	}
+
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
-
   /* USER CODE END USART2_IRQn 1 */
 }
 
@@ -120,6 +120,15 @@ void start_receive(){
 
 void continue_receive(){
 	HAL_UART_Receive_IT(&huart2, RX_Buffer, RX_BUFFER_SIZE);
+}
+
+uint8_t* getData(){
+	if(receiveOK == 1){
+		receiveOK = 0;
+		return UART_Buffer;
+	} else {
+		return NULL;
+	}
 }
 
 /* When receive  */

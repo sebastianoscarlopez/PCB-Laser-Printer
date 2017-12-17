@@ -107,8 +107,6 @@ int main(void)
   /* Initialize buffer */
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
-  onReceive = &receiveHandle;
   start_receive();
 
   //HAL_UART_Receive(&huart2, DMA_RX_Buffer, DMA_RX_BUFFER_SIZE, 100);
@@ -121,9 +119,16 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-		  HAL_Delay(1000);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	  uint8_t* data = getData();
+	  if(data != NULL)
+	  {
+		  receiveHandle(data);
+	  }
+	  HAL_Delay(100);
+
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+//		  HAL_Delay(1000);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
   }
   /* USER CODE END 3 */
 
