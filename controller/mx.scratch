@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project>
-<ProjectName>D:\git\PCB-Laser-Printer\interfaz\\interfaz</ProjectName>
+<ProjectName>D:\git\PCB-Laser-Printer\controller\\controller</ProjectName>
 <CMSIS>..\Drivers\CMSIS</CMSIS>
 <HAL_Driver>C:\Users\sebas\STM32Cube\Repository\STM32Cube_FW_F3_V1.9.0\Drivers\CMSIS</HAL_Driver>
 
@@ -22,7 +22,7 @@
 
 <configs>
   <config>
-    <name>interfaz</name>				
+    <name>controller</name>				
     <device>STM32F303RETx</device>		 
     <heapSize>0x200</heapSize>
     <stackSize>0x400</stackSize>

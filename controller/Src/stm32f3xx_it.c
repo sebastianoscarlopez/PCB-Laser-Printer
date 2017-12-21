@@ -36,23 +36,44 @@
 #include "stm32f3xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#define RX_BUFFER_SIZE          1
-uint8_t RX_Buffer[RX_BUFFER_SIZE];
 
-/* Buffer after received data */
-#define UART_BUFFER_SIZE		10
-uint8_t UART_Buffer[UART_BUFFER_SIZE];
-
-volatile uint8_t receiveOK = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern TIM_HandleTypeDef htim3;
+extern DMA_HandleTypeDef hdma_tim2_ch1;
+extern DMA_HandleTypeDef hdma_usart2_rx;
+extern DMA_HandleTypeDef hdma_usart2_tx;
 extern UART_HandleTypeDef huart2;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
+
+/**
+* @brief This function handles System service call via SWI instruction.
+*/
+void SVC_Handler(void)
+{
+  /* USER CODE BEGIN SVCall_IRQn 0 */
+
+  /* USER CODE END SVCall_IRQn 0 */
+  /* USER CODE BEGIN SVCall_IRQn 1 */
+
+  /* USER CODE END SVCall_IRQn 1 */
+}
+
+/**
+* @brief This function handles Pendable request for system service.
+*/
+void PendSV_Handler(void)
+{
+  /* USER CODE BEGIN PendSV_IRQn 0 */
+
+  /* USER CODE END PendSV_IRQn 0 */
+  /* USER CODE BEGIN PendSV_IRQn 1 */
+
+  /* USER CODE END PendSV_IRQn 1 */
+}
 
 /**
 * @brief This function handles System tick timer.
@@ -77,31 +98,45 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-* @brief This function handles RCC global interrupt.
+* @brief This function handles DMA1 channel5 global interrupt.
 */
-void RCC_IRQHandler(void)
+void DMA1_Channel5_IRQHandler(void)
 {
-  /* USER CODE BEGIN RCC_IRQn 0 */
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
 
-  /* USER CODE END RCC_IRQn 0 */
-  /* USER CODE BEGIN RCC_IRQn 1 */
+  /* USER CODE END DMA1_Channel5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_tim2_ch1);
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
 
-  /* USER CODE END RCC_IRQn 1 */
+  /* USER CODE END DMA1_Channel5_IRQn 1 */
 }
 
 /**
-* @brief This function handles TIM3 global interrupt.
+* @brief This function handles DMA1 channel6 global interrupt.
 */
-void TIM3_IRQHandler(void)
+void DMA1_Channel6_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM3_IRQn 0 */
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
 
-  /* USER CODE END TIM3_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim3);
-  /* USER CODE BEGIN TIM3_IRQn 1 */
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_8);
+  /* USER CODE END DMA1_Channel6_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+  uartOnReceive();
+  /* USER CODE END DMA1_Channel6_IRQn 1 */
+}
 
-  /* USER CODE END TIM3_IRQn 1 */
+/**
+* @brief This function handles DMA1 channel7 global interrupt.
+*/
+void DMA1_Channel7_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel7_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_tx);
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel7_IRQn 1 */
 }
 
 /**
@@ -110,43 +145,18 @@ void TIM3_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-	HAL_UART_IRQHandler(&huart2);
-	volatile size_t idxBuffer = strlen(UART_Buffer);
-	uint8_t* ptr = RX_Buffer;
-	memcpy(&UART_Buffer[idxBuffer], ptr, RX_BUFFER_SIZE);
-	UART_Buffer[idxBuffer + RX_BUFFER_SIZE] = '\0';
-	if(strlen(UART_Buffer) < UART_BUFFER_SIZE)
-	{
-		continue_receive();
-	} else {
-		receiveOK = 1;
-	}
-
+  if(huart2.Instance->ISR & USART_ISR_IDLE){
+	  huart2.Instance->ICR = UART_CLEAR_IDLEF;
+	  uartSetReady();
+  }
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
+
   /* USER CODE END USART2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
-void start_receive(){
-	UART_Buffer[0] = '\0';
-	HAL_UART_Receive_IT(&huart2, RX_Buffer, RX_BUFFER_SIZE);
-}
 
-void continue_receive(){
-	HAL_UART_Receive_IT(&huart2, RX_Buffer, RX_BUFFER_SIZE);
-}
-
-uint8_t* getData(){
-	if(receiveOK == 1){
-		receiveOK = 0;
-		return UART_Buffer;
-	} else {
-		return NULL;
-	}
-}
-
-/* When receive  */
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
