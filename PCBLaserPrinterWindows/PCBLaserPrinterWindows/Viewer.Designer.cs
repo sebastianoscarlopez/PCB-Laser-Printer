@@ -32,8 +32,8 @@
             this.txtFile = new System.Windows.Forms.TextBox();
             this.btnProcesar = new System.Windows.Forms.Button();
             this.statusBar = new System.Windows.Forms.StatusStrip();
-            this.barProcess = new System.Windows.Forms.ToolStripProgressBar();
             this.lblProcess = new System.Windows.Forms.ToolStripStatusLabel();
+            this.barProcess = new System.Windows.Forms.ToolStripProgressBar();
             this.lblError = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.ViewerBox)).BeginInit();
             this.statusBar.SuspendLayout();
@@ -47,7 +47,7 @@
             this.ViewerBox.BackColor = System.Drawing.Color.Black;
             this.ViewerBox.Location = new System.Drawing.Point(12, 40);
             this.ViewerBox.Name = "ViewerBox";
-            this.ViewerBox.Size = new System.Drawing.Size(405, 339);
+            this.ViewerBox.Size = new System.Drawing.Size(405, 363);
             this.ViewerBox.TabIndex = 0;
             this.ViewerBox.TabStop = false;
             // 
@@ -70,6 +70,7 @@
             // 
             // statusBar
             // 
+            this.statusBar.BackColor = System.Drawing.Color.Gainsboro;
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblProcess,
             this.barProcess,
@@ -81,16 +82,16 @@
             this.statusBar.Text = "statusStrip1";
             this.statusBar.Visible = false;
             // 
-            // barProcess
-            // 
-            this.barProcess.Name = "barProcess";
-            this.barProcess.Size = new System.Drawing.Size(200, 20);
-            // 
             // lblProcess
             // 
             this.lblProcess.Name = "lblProcess";
             this.lblProcess.Size = new System.Drawing.Size(59, 21);
             this.lblProcess.Text = "Procesing";
+            // 
+            // barProcess
+            // 
+            this.barProcess.Name = "barProcess";
+            this.barProcess.Size = new System.Drawing.Size(200, 20);
             // 
             // lblError
             // 

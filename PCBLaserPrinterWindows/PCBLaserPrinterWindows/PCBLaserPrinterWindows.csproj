@@ -64,10 +64,12 @@
   <ItemGroup>
     <Compile Include="ConstantMessage.cs" />
     <Compile Include="EGerberRowType.cs" />
+    <Compile Include="GerberDrawData.cs" />
     <Compile Include="GerberParser.cs" />
     <Compile Include="GerberPresenter.cs" />
     <Compile Include="GerberRow.cs" />
     <Compile Include="IGerberViewer.cs" />
+    <Compile Include="StatusProcess.cs" />
     <Compile Include="Viewer.cs">
       <SubType>Form</SubType>
     </Compile>

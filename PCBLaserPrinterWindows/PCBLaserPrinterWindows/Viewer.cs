@@ -1,19 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.IO;
-using System.Windows;
 using System.Windows.Forms;
-using System.Threading;
-using System.Reactive.Concurrency;
 
 namespace PCBLaserPrinterWindows
 {
@@ -39,20 +26,15 @@ namespace PCBLaserPrinterWindows
         public void startParse()
         {
             hideStatus();
-            lblProcess.Text = "Parse processing";
+            lblProcess.Text = ConstantMessage.Processing;
             barProcess.Value = 0;
             lblProcess.Visible = barProcess.Visible = statusBar.Visible = true;
         }
 
-        public void parseProgress(int progress, int total)
+        public void parseProgress(StatusProcess status)
         {
-            barProcess.Maximum = total;
-            barProcess.Value = progress;
-        }
-
-        public void parseProgress(int progress)
-        {
-            barProcess.Value = progress;
+            lblProcess.Text = status.ProcessName;
+            barProcess.Value = status.Percent;
         }
 
         public void parseComplete()
