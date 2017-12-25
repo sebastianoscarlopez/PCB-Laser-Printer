@@ -34,7 +34,7 @@ namespace PCBLaserPrinterWindows
                         () => viewer.parseComplete()
                     );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 viewer.parseError(new Exception(ConstantMessage.UnexpectedError));
             }
