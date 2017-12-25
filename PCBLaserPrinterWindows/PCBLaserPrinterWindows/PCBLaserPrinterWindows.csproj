@@ -64,7 +64,9 @@
   <ItemGroup>
     <Compile Include="ConstantMessage.cs" />
     <Compile Include="EGerberRowType.cs" />
-    <Compile Include="GerberDrawData.cs" />
+    <Compile Include="GerberAperture.cs" />
+    <Compile Include="GerberDrawInfo.cs" />
+    <Compile Include="GerberHeader.cs" />
     <Compile Include="GerberParser.cs" />
     <Compile Include="GerberPresenter.cs" />
     <Compile Include="GerberRow.cs" />

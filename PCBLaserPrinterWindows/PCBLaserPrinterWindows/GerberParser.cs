@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -14,6 +15,7 @@ namespace PCBLaserPrinterWindows
         private readonly string filePath;
         private List<GerberRow> rows;
         private List<GerberDrawInfo> DrawInfo;
+        private GerberHeader Header = new GerberHeader();
 
         public GerberParser(string filePath)
         {
@@ -34,7 +36,6 @@ namespace PCBLaserPrinterWindows
                     
                     for(var rowIndex = 0; rowIndex < lines.Length; rowIndex++)
                     {
-                        Thread.Sleep(200); // TODO: Eliminar linea
                         var line = lines[rowIndex];
                         var type = line[0] == '%'
                             ? EGerberRowType.Header
@@ -78,7 +79,6 @@ namespace PCBLaserPrinterWindows
                     var statusProcess = new StatusProcess() {
                         ProcessName = ConstantMessage.DataDrawProcessing
                     };
-                    var rowIndex = 0;
                     DrawInfo = new List<GerberDrawInfo>();
                     GerberDrawInfo lastDrawInfo = new GerberDrawInfo
                     {
@@ -89,10 +89,12 @@ namespace PCBLaserPrinterWindows
                         AbsolutePointStart = new Point(0, 0),
                         AbsolutePointEnd = new Point(0, 0)
                     };
-                    
-                    foreach (var r in rows.OrderBy(r => r.rowIndex))
+
+                    var rowIndex = 0;
+                    var parseOk = true;
+                    while (rowIndex < rows.Count && parseOk)
                     {
-                        Thread.Sleep(200); // TODO: Eliminar linea
+                        var r = rows[rowIndex];
                         rowIndex++;
                         switch (r.type)
                         {
@@ -100,16 +102,26 @@ namespace PCBLaserPrinterWindows
                                 var startChar = r.rowText[0];
                                 switch(startChar)
                                 {
-                                    // Header
-                                    case '%':
-                                        break;
                                     // Command
                                     case 'G':
                                     case 'X':
                                     case 'Y':
-                                        switch (r.rowText.Substring(0, 3))
+                                        switch (startChar == 'G' 
+                                            ? r.rowText.Substring(0, 3)
+                                            : lastDrawInfo.GCode)
                                         {
-                                            case "G04": // Comment
+                                            case "G04": // Comments are ignored
+                                            case "G90": // Absolute coordinate
+                                                Header.isAbsolute = true;
+                                                break;
+                                            case "G91": // Relative coordinate
+                                                Header.isAbsolute = false;
+                                                break;
+                                            case "G70": // Inch unit expressed in Micrometer
+                                                Header.Unit = 25400;
+                                                break;
+                                            case "G71": // Millimeter Unit expressed in Micrometer
+                                                Header.Unit = 1000;
                                                 break;
                                             case "G01": // Linear mode
                                                 var di = getDataDraw(r.rowText, lastDrawInfo);
@@ -127,7 +139,7 @@ namespace PCBLaserPrinterWindows
                                                 break;
                                             case "G54": // Aperture change
                                                 lastDrawInfo = new GerberDrawInfo{
-                                                    GCode = "G54",
+                                                    GCode = lastDrawInfo.GCode,
                                                     Aperture = int.Parse(r.rowText.Substring(4, 2)),
                                                     ApertureMode = lastDrawInfo.ApertureMode,
                                                     IsLPDark = lastDrawInfo.IsLPDark,
@@ -137,20 +149,65 @@ namespace PCBLaserPrinterWindows
                                                 break;
                                             default:
                                                 observer.OnError(new Exception(ConstantMessage.CommandUnknow));
+                                                parseOk = false;
                                                 break;
+                                        }
+                                        break;
+                                    // End
+                                    case 'M':
+                                        // M00 and M01 are deprecated
+                                        if (r.rowText.Equals("M02*")) {
+                                            observer.OnCompleted();
+                                        }
+                                        else
+                                        {
+                                            observer.OnError(new Exception(ConstantMessage.CommandUnknow));
+                                            parseOk = false;
                                         }
                                         break;
                                     default:
                                         observer.OnError(new Exception(ConstantMessage.CommandUnknow));
+                                        parseOk = false;
                                         break;
                                 }
-
+                                break;
+                            case EGerberRowType.Header:
+                                switch (r.rowText.Substring(1, 2))
+                                {
+                                    // Format Specification
+                                    case "FS":
+                                        var reFS = new Regex(@"^%FS([L|T])([A|I])X(\d)(\d)Y\3\4\*%$");
+                                        var groupsFS = reFS.Matches(r.rowText)[0].Groups;
+                                        Header.isLeadingZeroOmission = groupsFS[1].Value.Equals("L");
+                                        Header.isAbsolute = groupsFS[2].Value.Equals("A");
+                                        Header.LeadingDigits = int.Parse(groupsFS[3].Value);
+                                        Header.TrailingDigits = int.Parse(groupsFS[4].Value);
+                                        break;
+                                    // Aperture Definition
+                                    case "AD":
+                                        var reAD = new Regex(@"^%ADD([1-9]\d+)([C|R|O|P]{1}),(?:([\d]*[\.][\d]*)X?)+\*%$");
+                                        var groupsAD = reAD.Matches(r.rowText)[0].Groups;
+                                        var aperture = new GerberAperture
+                                        {
+                                            Aperture = int.Parse(groupsAD[1].Value),
+                                            Shape = groupsAD[2].Value[0]
+                                        };
+                                        foreach(Capture c in groupsAD[3].Captures)
+                                        {
+                                            aperture.Modifiers.Add(double.Parse(c.Value, CultureInfo.InvariantCulture));
+                                        }
+                                        Header.Apertures.Add(aperture);
+                                        break;
+                                    default:
+                                        observer.OnError(new Exception(ConstantMessage.CommandUnknow));
+                                        parseOk = false;
+                                        break;
+                                }
                                 break;
                         }
                         statusProcess.Percent = rowIndex * 100 / rows.Count();
                         observer.OnNext(statusProcess);
                     }
-                    observer.OnCompleted();
                 }
                 catch (Exception)
                 {
@@ -177,6 +234,11 @@ namespace PCBLaserPrinterWindows
             var gY = matches[0].Groups[3];
             var gD = matches[0].Groups[4];
 
+            // GCode
+            di.GCode = gGC.Success
+                ? gGC.Value
+                : lastDrawInfo.GCode;
+
             // LP change in header
             di.IsLPDark = lastDrawInfo.IsLPDark;
 
@@ -184,7 +246,7 @@ namespace PCBLaserPrinterWindows
             di.Aperture = lastDrawInfo.Aperture;
 
             // Start point is equal to end last point, in D03 it's ommitted
-            di.AbsolutePointStart = lastDrawInfo.AbsolutePointStart;
+            di.AbsolutePointStart = lastDrawInfo.AbsolutePointEnd;
 
             // End point
             var x = gX.Success
