@@ -1,12 +1,11 @@
-﻿using System;
+﻿using GerberDTO;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace PCBLaserPrinterWindows
 {
@@ -14,8 +13,8 @@ namespace PCBLaserPrinterWindows
     {
         private readonly string filePath;
         private List<GerberRow> rows;
-        private List<GerberDrawInfo> DrawInfo;
-        private GerberHeader Header = new GerberHeader();
+        private List<GerberDrawG01DTO> DrawsG01;
+        private GerberHeaderDTO Header = new GerberHeaderDTO();
 
         public GerberParser(string filePath)
         {
@@ -79,15 +78,15 @@ namespace PCBLaserPrinterWindows
                     var statusProcess = new StatusProcess() {
                         ProcessName = ConstantMessage.DataDrawProcessing
                     };
-                    DrawInfo = new List<GerberDrawInfo>();
-                    GerberDrawInfo lastDrawInfo = new GerberDrawInfo
+                    DrawsG01 = new List<GerberDrawG01DTO>();
+                    GerberDrawG01DTO lastDrawInfo = new GerberDrawG01DTO
                     {
                         GCode = "G01",
                         ApertureMode = 2,
                         Aperture = 10,
                         IsLPDark = true,
-                        AbsolutePointStart = new Point(0, 0),
-                        AbsolutePointEnd = new Point(0, 0)
+                        AbsolutePointStart = new CoordinateDTO(0, 0),
+                        AbsolutePointEnd = new CoordinateDTO(0, 0)
                     };
 
                     var rowIndex = 0;
@@ -129,7 +128,7 @@ namespace PCBLaserPrinterWindows
                                                 {
                                                     case 1:
                                                     case 3:
-                                                        DrawInfo.Add(di);
+                                                        DrawsG01.Add(di);
                                                         lastDrawInfo = di;
                                                         break;
                                                     case 2: // Mode 02 it just change lastCoordenate
@@ -138,7 +137,7 @@ namespace PCBLaserPrinterWindows
                                                 }
                                                 break;
                                             case "G54": // Aperture change
-                                                lastDrawInfo = new GerberDrawInfo{
+                                                lastDrawInfo = new GerberDrawG01DTO{
                                                     GCode = lastDrawInfo.GCode,
                                                     Aperture = int.Parse(r.rowText.Substring(4, 2)),
                                                     ApertureMode = lastDrawInfo.ApertureMode,
@@ -187,7 +186,7 @@ namespace PCBLaserPrinterWindows
                                     case "AD":
                                         var reAD = new Regex(@"^%ADD([1-9]\d+)([C|R|O|P]{1}),(?:([\d]*[\.][\d]*)X?)+\*%$");
                                         var groupsAD = reAD.Matches(r.rowText)[0].Groups;
-                                        var aperture = new GerberAperture
+                                        var aperture = new GerberApertureDTO
                                         {
                                             Aperture = int.Parse(groupsAD[1].Value),
                                             Shape = groupsAD[2].Value[0]
@@ -219,7 +218,7 @@ namespace PCBLaserPrinterWindows
         
 
         // It support G01 draw command, it goin to support G02 and G03. G36 and G37 will be a list of this.
-        private GerberDrawInfo getDataDraw(string text, GerberDrawInfo lastDrawInfo)
+        private GerberDrawG01DTO getDataDraw(string text, GerberDrawG01DTO lastDrawInfo)
         {
             var re = new Regex(@"^(G\d\d)?(?:X(\d+))?(?:Y(\d+))?(?:D(0[1-3]{1}))?\*$");
             var matches = re.Matches(text);
@@ -227,7 +226,7 @@ namespace PCBLaserPrinterWindows
             {
                 return null;
             }
-            var di = new GerberDrawInfo();
+            var di = new GerberDrawG01DTO();
 
             var gGC = matches[0].Groups[1];
             var gX = matches[0].Groups[2];
@@ -255,7 +254,7 @@ namespace PCBLaserPrinterWindows
             var y = gY.Success
                 ? int.Parse(gY.Value.ToString())
                 : lastDrawInfo.AbsolutePointEnd.Y;
-            di.AbsolutePointEnd = new Point(x, y);
+            di.AbsolutePointEnd = new CoordinateDTO(x, y);
             
             // Aperture mode
             di.ApertureMode = gD.Success

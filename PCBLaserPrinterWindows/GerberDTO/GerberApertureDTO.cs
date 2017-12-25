@@ -2,7 +2,7 @@
 
 namespace PCBLaserPrinterWindows
 {
-    public class GerberAperture
+    public class GerberApertureDTO
     {
         public int Aperture { get; set; }
         public char Shape { get; set; }

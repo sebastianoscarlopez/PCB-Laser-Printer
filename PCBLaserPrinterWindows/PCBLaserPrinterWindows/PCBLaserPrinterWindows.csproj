@@ -64,9 +64,6 @@
   <ItemGroup>
     <Compile Include="ConstantMessage.cs" />
     <Compile Include="EGerberRowType.cs" />
-    <Compile Include="GerberAperture.cs" />
-    <Compile Include="GerberDrawInfo.cs" />
-    <Compile Include="GerberHeader.cs" />
     <Compile Include="GerberParser.cs" />
     <Compile Include="GerberPresenter.cs" />
     <Compile Include="GerberRow.cs" />
@@ -105,6 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GerberDTO\GerberDTO.csproj">
+      <Project>{73fc0f2f-1cb5-43a6-bc1b-43e902ee3e09}</Project>
+      <Name>GerberDTO</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
