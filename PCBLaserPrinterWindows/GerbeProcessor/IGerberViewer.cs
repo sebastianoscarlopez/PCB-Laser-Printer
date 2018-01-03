@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Gerber;
+using System;
 
-namespace PCBLaserPrinterWindows
+namespace Gerber
 {
-    interface IGerberViewer
+    public interface IGerberViewer
     {
         void startParse();
-        void parseProgress(StatusProcess status);
+        void parseProgress(StatusProcessDTO status);
         void parseComplete();
         void parseError(Exception exception);
         void error(string errorDescription);

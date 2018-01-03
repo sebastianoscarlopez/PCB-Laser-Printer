@@ -1,4 +1,4 @@
-﻿namespace PCBLaserPrinterWindows
+﻿namespace Gerber
 {
     public enum EGerberRowType
     {

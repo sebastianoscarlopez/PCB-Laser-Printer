@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Threading;
+using Gerber;
 
-namespace PCBLaserPrinterWindows
+namespace Gerber
 {
-    class GerberPresenter
+    public class GerberPresenter
     {
         private readonly IGerberViewer viewer;
 
@@ -20,9 +20,16 @@ namespace PCBLaserPrinterWindows
             try
             {
                 viewer.startParse();
-                var gp = new GerberParser(file);
-                gp.ClassifyRows()
-                    .Concat(gp.GenerateDataDraw())
+                var parser = new GerberFileParser(file);
+                parser.ClassifyRows()
+                    .Concat(parser.GenerateDataDraw())
+                    .Concat(
+                        new GerberMetaInfo(parser.Header, parser.Draws, 96).GenerateMetaInfo()
+                        .Select(i => new StatusProcessDTO()
+                        {
+                            ProcessName = "MetaInfo",
+                            Percent = i
+                        }))                        
                     .ObserveOn(Dispatcher.CurrentDispatcher)
                     .SubscribeOn(ThreadPoolScheduler.Instance)
                     .Subscribe(

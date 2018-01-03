@@ -7,7 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCBLaserPrinterWindows", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberDTO", "GerberDTO\GerberDTO.csproj", "{73FC0F2F-1CB5-43A6-BC1B-43E902EE3E09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerbeProcessor", "GerbeProcessor\GerbeProcessor.csproj", "{893A94E2-FC8F-4B86-A677-C4079FB35F87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberProcessor", "GerbeProcessor\GerberProcessor.csproj", "{893A94E2-FC8F-4B86-A677-C4079FB35F87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberParser", "GerberParser\GerberParser.csproj", "{29299067-772C-4413-BF3D-D12AB40E313B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawerHelper", "DrawerHelper\DrawerHelper.csproj", "{B238C43D-B527-4A4A-8C31-0088CDE8A02D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberMetaInfo", "GerberMetaInfo\GerberMetaInfo.csproj", "{D62A37A3-9279-4C43-919E-5FFFF8176103}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +33,18 @@ Global
 		{893A94E2-FC8F-4B86-A677-C4079FB35F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{893A94E2-FC8F-4B86-A677-C4079FB35F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{893A94E2-FC8F-4B86-A677-C4079FB35F87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29299067-772C-4413-BF3D-D12AB40E313B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29299067-772C-4413-BF3D-D12AB40E313B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29299067-772C-4413-BF3D-D12AB40E313B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29299067-772C-4413-BF3D-D12AB40E313B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B238C43D-B527-4A4A-8C31-0088CDE8A02D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B238C43D-B527-4A4A-8C31-0088CDE8A02D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B238C43D-B527-4A4A-8C31-0088CDE8A02D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B238C43D-B527-4A4A-8C31-0088CDE8A02D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D62A37A3-9279-4C43-919E-5FFFF8176103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D62A37A3-9279-4C43-919E-5FFFF8176103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D62A37A3-9279-4C43-919E-5FFFF8176103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D62A37A3-9279-4C43-919E-5FFFF8176103}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿namespace PCBLaserPrinterWindows
+﻿namespace Gerber
 {
     static public class ConstantMessage
     {

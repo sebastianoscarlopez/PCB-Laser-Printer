@@ -1,5 +1,4 @@
-﻿using GerberDTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -7,27 +6,53 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 
-namespace PCBLaserPrinterWindows
+namespace Gerber
 {
-    class GerberParser
+    /// <summary>
+    /// Gerber Parser
+    /// Every method return an observable with status for a simple progress report implementation
+    /// Follow the next steps
+    /// Call the constructor
+    /// Call ClassifyRows method
+    /// Call GenerateDataDraw method
+    /// 
+    /// Next pass the Draws and and Header to GerberMetaInfo
+    /// </summary>
+    public class GerberFileParser
     {
         private readonly string filePath;
         private List<GerberRow> rows;
-        private List<GerberDrawG01DTO> DrawsG01;
-        private GerberHeaderDTO Header = new GerberHeaderDTO();
 
-        public GerberParser(string filePath)
+        /// <summary>
+        /// Header usefull for GerberMetaInfo, previous to use must call GenerateDataDraw
+        /// </summary>
+        public GerberHeaderDTO Header = new GerberHeaderDTO();
+
+        /// <summary>
+        /// Draws usefull for GerberMetaInfo, previous to use must call GenerateDataDraw
+        /// </summary>
+        public List<GerberDrawDTO> Draws = new List<GerberDrawDTO>();
+        
+        /// <summary>
+        /// Construct the parser
+        /// </summary>
+        /// <param name="filePath">Complete path file</param>
+        public GerberFileParser(string filePath)
         {
             this.filePath = filePath;
         }
 
-        public IObservable<StatusProcess> ClassifyRows()
+        /// <summary>
+        /// Read the complete file and classify his rows into Command and Header group
+        /// </summary>
+        /// <returns>Observable of status process</returns>
+        public IObservable<StatusProcessDTO> ClassifyRows()
         {
-            return Observable.Create((IObserver<StatusProcess> observer) =>
+            return Observable.Create((IObserver<StatusProcessDTO> observer) =>
             {
                 try
                 {
-                    var statusProcess = new StatusProcess() {
+                    var statusProcess = new StatusProcessDTO() {
                         ProcessName = ConstantMessage.ParseProcessing
                     };
                     var lines = File.ReadAllLines(filePath);
@@ -69,17 +94,23 @@ namespace PCBLaserPrinterWindows
             });
         }
 
-        public IObservable<StatusProcess> GenerateDataDraw()
+        /// <summary>
+        /// Compress data into GerberHeaderDTO and list of GerberDrawDTO
+        /// It's two objects contain all necesary information for draw in screen or printer
+        /// 
+        /// It support G01 draw command, it goin to support G02 and G03, G36 and G37.
+        /// </summary>
+        /// <returns>Observable of status process</returns>
+        public IObservable<StatusProcessDTO> GenerateDataDraw()
         {
-            return Observable.Create((IObserver<StatusProcess> observer) =>
+            return Observable.Create((IObserver<StatusProcessDTO> observer) =>
             {
                 try
                 {
-                    var statusProcess = new StatusProcess() {
+                    var statusProcess = new StatusProcessDTO() {
                         ProcessName = ConstantMessage.DataDrawProcessing
                     };
-                    DrawsG01 = new List<GerberDrawG01DTO>();
-                    GerberDrawG01DTO lastDrawInfo = new GerberDrawG01DTO
+                    GerberDrawDTO lastDrawInfo = new GerberDrawDTO
                     {
                         GCode = "G01",
                         ApertureMode = 2,
@@ -128,7 +159,7 @@ namespace PCBLaserPrinterWindows
                                                 {
                                                     case 1:
                                                     case 3:
-                                                        DrawsG01.Add(di);
+                                                        Draws.Add(di);
                                                         lastDrawInfo = di;
                                                         break;
                                                     case 2: // Mode 02 it just change lastCoordenate
@@ -137,7 +168,7 @@ namespace PCBLaserPrinterWindows
                                                 }
                                                 break;
                                             case "G54": // Aperture change
-                                                lastDrawInfo = new GerberDrawG01DTO{
+                                                lastDrawInfo = new GerberDrawDTO{
                                                     GCode = lastDrawInfo.GCode,
                                                     Aperture = int.Parse(r.rowText.Substring(4, 2)),
                                                     ApertureMode = lastDrawInfo.ApertureMode,
@@ -193,7 +224,9 @@ namespace PCBLaserPrinterWindows
                                         };
                                         foreach(Capture c in groupsAD[3].Captures)
                                         {
-                                            aperture.Modifiers.Add(double.Parse(c.Value, CultureInfo.InvariantCulture));
+                                            var valueUnit = double.Parse(c.Value, CultureInfo.InvariantCulture);
+                                            var value = (int)(valueUnit * (2 ^ Header.TrailingDigits));
+                                            aperture.Modifiers.Add(value);
                                         }
                                         Header.Apertures.Add(aperture);
                                         break;
@@ -215,10 +248,14 @@ namespace PCBLaserPrinterWindows
                 return () => { };
             });
         }
-        
 
-        // It support G01 draw command, it goin to support G02 and G03. G36 and G37 will be a list of this.
-        private GerberDrawG01DTO getDataDraw(string text, GerberDrawG01DTO lastDrawInfo)
+        /// <summary>
+        /// It support G01 draw command, it goin to support G02 and G03. G36 and G37 will maybe be a list of this.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="lastDrawInfo"></param>
+        /// <returns></returns>
+        private GerberDrawDTO getDataDraw(string text, GerberDrawDTO lastDrawInfo)
         {
             var re = new Regex(@"^(G\d\d)?(?:X(\d+))?(?:Y(\d+))?(?:D(0[1-3]{1}))?\*$");
             var matches = re.Matches(text);
@@ -226,7 +263,7 @@ namespace PCBLaserPrinterWindows
             {
                 return null;
             }
-            var di = new GerberDrawG01DTO();
+            var di = new GerberDrawDTO();
 
             var gGC = matches[0].Groups[1];
             var gX = matches[0].Groups[2];

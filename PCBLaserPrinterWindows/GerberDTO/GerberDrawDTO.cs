@@ -1,8 +1,8 @@
-﻿using GerberDTO;
+﻿using Gerber;
 
-namespace PCBLaserPrinterWindows
+namespace Gerber
 {
-    public class GerberDrawG01DTO
+    public class GerberDrawDTO
     {
         public string GCode { get; set; }
         public bool IsLPDark { get; set; }

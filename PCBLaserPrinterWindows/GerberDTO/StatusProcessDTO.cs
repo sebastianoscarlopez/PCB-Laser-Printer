@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PCBLaserPrinterWindows
+namespace Gerber
 {
-    public class StatusProcess
+    public class StatusProcessDTO
     {
         public string ProcessName { get; set; }
         public int Percent { get; set; }

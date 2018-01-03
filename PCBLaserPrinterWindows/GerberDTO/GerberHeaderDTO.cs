@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PCBLaserPrinterWindows
+namespace Gerber
 {
     public class GerberHeaderDTO
     {
