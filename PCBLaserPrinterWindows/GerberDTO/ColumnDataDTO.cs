@@ -16,7 +16,8 @@ namespace Gerber
     public class ColumnDataDTO
     {
         public TypeColumn TypeColumn { get; set; }
-        public int Length { get; set; }
+        public int Left { get; set; }
+        public int Right { get; set; }
         public List<GerberDrawDTO> Draws { get; set; } = new List<GerberDrawDTO>();
     }
 }

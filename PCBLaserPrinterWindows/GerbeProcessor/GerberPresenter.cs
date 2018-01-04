@@ -9,6 +9,7 @@ namespace Gerber
     public class GerberPresenter
     {
         private readonly IGerberViewer viewer;
+        private GerberMetaInfo metaInfo;
 
         public GerberPresenter(IGerberViewer viewer)
         {
@@ -21,10 +22,11 @@ namespace Gerber
             {
                 viewer.startParse();
                 var parser = new GerberFileParser(file);
+                metaInfo = new GerberMetaInfo(parser.Header, parser.Draws);
                 parser.ClassifyRows()
                     .Concat(parser.GenerateDataDraw())
                     .Concat(
-                        new GerberMetaInfo(parser.Header, parser.Draws).GenerateMetaInfo(96)
+                        metaInfo.GenerateMetaInfo(254)
                         .Select(i => new StatusProcessDTO()
                         {
                             ProcessName = "MetaInfo",
@@ -45,6 +47,12 @@ namespace Gerber
             {
                 viewer.parseError(new Exception(ConstantMessage.UnexpectedError));
             }
+        }
+
+        public void startDrawCanvas()
+        {
+            var drawer = Observable.Start(() => new GerberDrawer().Draw(metaInfo.MetaInfo));
+            drawer.Subscribe((image) => viewer.refreshCanvas(image));
         }
     }
 }

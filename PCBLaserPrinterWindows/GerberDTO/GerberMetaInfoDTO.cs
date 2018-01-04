@@ -10,7 +10,8 @@ namespace Gerber
     public class GerberMetaInfoDTO
     {
         public int DPI { get; set; }
+        public int Scale { get; set; }
         public Rectangle Bounds { get; set; }
-        public List<PlarityLayerDTO> PolarityLayers { get; set; }
+        public List<PlarityLayerDTO> PolarityLayers { get; set; } = new List<PlarityLayerDTO>();
     }
 }

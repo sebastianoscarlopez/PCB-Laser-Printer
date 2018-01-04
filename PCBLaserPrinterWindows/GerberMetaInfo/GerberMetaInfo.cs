@@ -45,6 +45,7 @@ namespace Gerber
                 MetaInfo = new GerberMetaInfoDTO();
                 MetaInfoBase = MetaInfo;
                 MetaInfo.DPI = dpi;
+                MetaInfo.Scale = (int)Math.Pow(10, Header.TrailingDigits) / dpi;
                 MetaInfo.Bounds = CalculateBounds();
                 MetaInfo.PolarityLayers.Add(new PlarityLayerDTO()
                 {
@@ -73,8 +74,8 @@ namespace Gerber
             IHelperAperture helper = helperR;
             helper.UpdateRows(MetaInfo, draw, Header.Apertures.Where(a => a.Aperture == draw.Aperture).Single(),
                 layerIndex,
-                MetaInfo.Bounds.Top,
-                MetaInfo.Bounds.Bottom);
+                MetaInfo.Bounds.Top / MetaInfo.Scale,
+                MetaInfo.Bounds.Bottom / MetaInfo.Scale);
         }
 
         /// <summary>

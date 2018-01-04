@@ -1,5 +1,6 @@
 ﻿using Gerber;
 using System;
+using System.Drawing;
 
 namespace Gerber
 {
@@ -10,5 +11,6 @@ namespace Gerber
         void parseComplete();
         void parseError(Exception exception);
         void error(string errorDescription);
+        void refreshCanvas(Bitmap bitmap);
     }
 }

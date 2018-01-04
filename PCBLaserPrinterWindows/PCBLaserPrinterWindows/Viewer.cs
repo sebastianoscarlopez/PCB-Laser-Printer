@@ -25,11 +25,6 @@ namespace PCBLaserPrinterWindows
 
         private void Viewer_Load(object sender, EventArgs e)
         {
-            var image = new Bitmap(ViewerBox.Size.Width, ViewerBox.Size.Height);
-            Graphics g = Graphics.FromImage(image);
-            Dot.Draw(1, 1, g);
-            ViewerBox.Image = image;
-            g.Dispose();
         }
 
         public void startParse()
@@ -49,6 +44,7 @@ namespace PCBLaserPrinterWindows
         public void parseComplete()
         {
             hideStatus();
+            presenter.startDrawCanvas();
         }
 
         public void parseError(Exception exception)
@@ -69,6 +65,11 @@ namespace PCBLaserPrinterWindows
             lblProcess.Visible = false;
             barProcess.Visible = false;
             statusBar.Visible = false;
+        }
+
+        public void refreshCanvas(Bitmap bitmap)
+        {
+            ViewerBox.Image = bitmap;
         }
     }
 }

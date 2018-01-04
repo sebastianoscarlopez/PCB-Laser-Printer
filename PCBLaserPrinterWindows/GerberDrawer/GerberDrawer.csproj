@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{893A94E2-FC8F-4B86-A677-C4079FB35F87}</ProjectGuid>
+    <ProjectGuid>{22A3721E-7003-4A31-A3CC-BB0D613282F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GerbeProcessor</RootNamespace>
-    <AssemblyName>GerberProcessor</AssemblyName>
+    <RootNamespace>GerberDrawer</RootNamespace>
+    <AssemblyName>GerberDrawer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -58,26 +58,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GerberPresenter.cs" />
-    <Compile Include="IGerberViewer.cs" />
+    <Compile Include="GerberDrawer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GerberDrawer\GerberDrawer.csproj">
-      <Project>{22a3721e-7003-4a31-a3cc-bb0d613282f7}</Project>
-      <Name>GerberDrawer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GerberDTO\GerberDTO.csproj">
       <Project>{73fc0f2f-1cb5-43a6-bc1b-43e902ee3e09}</Project>
       <Name>GerberDTO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GerberMetaInfo\GerberMetaInfo.csproj">
-      <Project>{d62a37a3-9279-4c43-919e-5ffff8176103}</Project>
-      <Name>GerberMetaInfo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GerberParser\GerberParser.csproj">
-      <Project>{29299067-772c-4413-bf3d-d12ab40e313b}</Project>
-      <Name>GerberParser</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
