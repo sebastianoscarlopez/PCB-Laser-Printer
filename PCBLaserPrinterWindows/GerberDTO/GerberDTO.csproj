@@ -41,13 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColumnDataDTO.cs" />
     <Compile Include="ConstantMessage.cs" />
     <Compile Include="CoordinateDTO.cs" />
     <Compile Include="GerberApertureDTO.cs" />
     <Compile Include="GerberDrawDTO.cs" />
     <Compile Include="GerberHeaderDTO.cs" />
     <Compile Include="GerberMetaInfoDTO.cs" />
+    <Compile Include="PlarityLayerDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RowDataDTO.cs" />
     <Compile Include="StatusProcessDTO.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

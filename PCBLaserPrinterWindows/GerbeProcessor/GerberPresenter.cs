@@ -24,7 +24,7 @@ namespace Gerber
                 parser.ClassifyRows()
                     .Concat(parser.GenerateDataDraw())
                     .Concat(
-                        new GerberMetaInfo(parser.Header, parser.Draws, 96).GenerateMetaInfo()
+                        new GerberMetaInfo(parser.Header, parser.Draws).GenerateMetaInfo(96)
                         .Select(i => new StatusProcessDTO()
                         {
                             ProcessName = "MetaInfo",

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
+using GerberMetaInfo;
 using System.Threading.Tasks;
 
 namespace Gerber
@@ -14,10 +14,11 @@ namespace Gerber
     /// </summary>
     public class GerberMetaInfo
     {
+        public GerberMetaInfoDTO MetaInfo;
+        private GerberMetaInfoDTO MetaInfoBase = null;
         private GerberHeaderDTO Header { get; set; }
         private List<GerberDrawDTO> Draws { get; set; }
-        private GerberMetaInfoDTO MetaInfoBase = null;
-        public GerberMetaInfoDTO MetaInfo;
+        private HelperR helperR = new HelperR();
 
         /// <summary>
         /// Constructor from GerberParser data
@@ -42,19 +43,38 @@ namespace Gerber
             return Observable.Create((IObserver<int> observer) =>
             {
                 MetaInfo = new GerberMetaInfoDTO();
-                if (MetaInfoBase == null)
+                MetaInfoBase = MetaInfo;
+                MetaInfo.DPI = dpi;
+                MetaInfo.Bounds = CalculateBounds();
+                MetaInfo.PolarityLayers.Add(new PlarityLayerDTO()
                 {
-                    MetaInfoBase = MetaInfo;
-                    MetaInfo.DPI = dpi;
-                    MetaInfo.Bounds
-                }
-                for (var i = 0; i < Draws.Count; i++)
-                {
-                    observer.OnNext(i);
-                }
-                observer.OnCompleted();
+                    Polarity = 'D'
+                });
+                var counter = 0;
+                Draws.ToObservable().Subscribe(
+                    draw =>
+                    {
+                        updateMetaInfo(draw, 0);
+                        observer.OnNext(++counter);
+                    },
+                    ex => observer.OnError(ex),
+                    () => observer.OnCompleted()
+                );
                 return () => { };
             });
+        }
+
+        /// <summary>
+        /// Update rows
+        /// </summary>
+        /// <param name="draw"></param>
+        private void updateMetaInfo(GerberDrawDTO draw, int layerIndex)
+        {
+            IHelperAperture helper = helperR;
+            helper.UpdateRows(MetaInfo, draw, Header.Apertures.Where(a => a.Aperture == draw.Aperture).Single(),
+                layerIndex,
+                MetaInfo.Bounds.Top,
+                MetaInfo.Bounds.Bottom);
         }
 
         /// <summary>
@@ -72,19 +92,40 @@ namespace Gerber
                 var apertureHeight = (modifiers[modifiers.Count > 1 ? 1 : 0]) / 2;
                 if (d.AbsolutePointStart.X - apertureWidth < bounds.Left)
                 {
+                    bounds.Width += bounds.X - d.AbsolutePointStart.X + apertureWidth;
                     bounds.X = d.AbsolutePointStart.X - apertureWidth;
                 }
-                if (d.AbsolutePointStart.Y - apertureHeight < bounds.Y)
+                if (d.AbsolutePointStart.Y + apertureHeight > bounds.Y)
                 {
-                    bounds.Y = d.AbsolutePointStart.Y - apertureHeight;
+                    bounds.Height -= d.AbsolutePointStart.Y + apertureHeight - bounds.Y;
+                    bounds.Y = d.AbsolutePointStart.Y + apertureHeight;
                 }
                 if (d.AbsolutePointStart.X + apertureWidth > bounds.Right)
                 {
                     bounds.Width = d.AbsolutePointStart.X + apertureWidth - bounds.X;
                 }
-                if (d.AbsolutePointStart.Y + apertureHeight > bounds.Top)
+                if (d.AbsolutePointStart.Y - apertureHeight < bounds.Bottom)
                 {
-                    bounds.Height = d.AbsolutePointStart.Y + apertureHeight - bounds.Y;
+                    bounds.Height = d.AbsolutePointStart.Y - apertureHeight - bounds.Y;
+                }
+
+                if (d.AbsolutePointEnd.X - apertureWidth < bounds.Left)
+                {
+                    bounds.Width += bounds.X - d.AbsolutePointEnd.X + apertureWidth;
+                    bounds.X = d.AbsolutePointEnd.X - apertureWidth;
+                }
+                if (d.AbsolutePointEnd.Y + apertureHeight > bounds.Y)
+                {
+                    bounds.Height -= d.AbsolutePointEnd.Y + apertureHeight - bounds.Y;
+                    bounds.Y = d.AbsolutePointEnd.Y + apertureHeight;
+                }
+                if (d.AbsolutePointEnd.X + apertureWidth > bounds.Right)
+                {
+                    bounds.Width = d.AbsolutePointEnd.X + apertureWidth - bounds.X;
+                }
+                if (d.AbsolutePointEnd.Y - apertureHeight < bounds.Bottom)
+                {
+                    bounds.Height = d.AbsolutePointEnd.Y - apertureHeight - bounds.Y;
                 }
             });
 

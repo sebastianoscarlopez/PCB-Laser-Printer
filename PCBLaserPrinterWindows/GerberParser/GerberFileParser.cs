@@ -225,7 +225,7 @@ namespace Gerber
                                         foreach(Capture c in groupsAD[3].Captures)
                                         {
                                             var valueUnit = double.Parse(c.Value, CultureInfo.InvariantCulture);
-                                            var value = (int)(valueUnit * (2 ^ Header.TrailingDigits));
+                                            var value = (int)(valueUnit * Math.Pow(10, Header.TrailingDigits));
                                             aperture.Modifiers.Add(value);
                                         }
                                         Header.Apertures.Add(aperture);
@@ -257,7 +257,7 @@ namespace Gerber
         /// <returns></returns>
         private GerberDrawDTO getDataDraw(string text, GerberDrawDTO lastDrawInfo)
         {
-            var re = new Regex(@"^(G\d\d)?(?:X(\d+))?(?:Y(\d+))?(?:D(0[1-3]{1}))?\*$");
+            var re = new Regex(@"^(G\d\d)?(?:X([-]?\d+))?(?:Y([-]?\d+))?(?:D(0[1-3]{1}))?\*$");
             var matches = re.Matches(text);
             if(matches.Count == 0)
             {
@@ -281,9 +281,6 @@ namespace Gerber
             // Aperture change in G54 command
             di.Aperture = lastDrawInfo.Aperture;
 
-            // Start point is equal to end last point, in D03 it's ommitted
-            di.AbsolutePointStart = lastDrawInfo.AbsolutePointEnd;
-
             // End point
             var x = gX.Success
                 ? int.Parse(gX.Value.ToString())
@@ -292,11 +289,16 @@ namespace Gerber
                 ? int.Parse(gY.Value.ToString())
                 : lastDrawInfo.AbsolutePointEnd.Y;
             di.AbsolutePointEnd = new CoordinateDTO(x, y);
-            
+
             // Aperture mode
             di.ApertureMode = gD.Success
                 ? int.Parse(gD.Value)
                 : lastDrawInfo.ApertureMode;
+
+            // Start point is equal to end last point, in D03 is just a point
+            di.AbsolutePointStart = di.ApertureMode != 3
+                ? lastDrawInfo.AbsolutePointEnd
+                : di.AbsolutePointEnd;
 
             return di;
         }

@@ -11,6 +11,6 @@ namespace Gerber
     {
         public int DPI { get; set; }
         public Rectangle Bounds { get; set; }
-        
+        public List<PlarityLayerDTO> PolarityLayers { get; set; }
     }
 }
