@@ -3,59 +3,61 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
-using GerberMetaInfo;
-using System.Threading.Tasks;
+using GerberMetaData;
 
 namespace Gerber
 {
     /// <summary>
-    /// Process Geber data provided by GerberParser or GerberMetaInfo 
-    /// The result is a complex object but very usefull for generate a fast an high quality draw, it draw can be in screen or printer.
+    /// Process Geber data provided by GerberParser or GerberMetaData
+    /// The result is a complex object but very usefull for generate a fast an high quality sketch, it can be drawed on the screen or printer.
     /// </summary>
-    public class GerberMetaInfo
+    public class MetaDataAdmin
     {
-        public GerberMetaInfoDTO MetaInfo;
-        private GerberMetaInfoDTO MetaInfoBase = null;
+        public GerberMetaDataDTO MetaData;
+        private GerberMetaDataDTO MetaDataBase = null;
         private GerberHeaderDTO Header { get; set; }
-        private List<GerberDrawDTO> Draws { get; set; }
-        private HelperR helperR = new HelperR();
+        private List<GerberTraceDTO> Traces { get; set; }
+        private List<KeyValuePair<char, MetaData>> metadataCreators = new List<KeyValuePair<char, GerberMetaData.MetaData>>()
+            {
+                new KeyValuePair<char, MetaData>('R', new MetaDataApertureR()),
+                new KeyValuePair<char, MetaData>('C', new MetaDataApertureC())
+            };
 
         /// <summary>
         /// Constructor from GerberParser data
         /// </summary>
         /// <param name="header">Header gerated with GerberParser</param>
-        /// <param name="draws">Draws gerated with GerberParser</param>
-        public GerberMetaInfo(GerberHeaderDTO header, List<GerberDrawDTO> draws)
+        /// <param name="traces">Draws gerated with GerberParser</param>
+        public MetaDataAdmin(GerberHeaderDTO header, List<GerberTraceDTO> traces)
         {
             Header = header;
-            Draws = draws;
-            //aux.metaInfo.Bounds = CalculateBounds();
+            Traces = traces;
         }
 
         /// <summary>
         /// Process all gerber data obtaining his meta data
         /// For biggers resolutions use an small area by time
         /// </summary>
-        /// <returns>Total draws processed</returns>
+        /// <returns>Total traces processed</returns>
         /// <param name="dpi">Dots per inch. It's recommendable an initial value between 48 and 192, a higher value is a memory exponencial increment</param>
-        public IObservable<int> GenerateMetaInfo(int dpi)
+        public IObservable<int> GenerateMetaData(int dpi)
         {
             return Observable.Create((IObserver<int> observer) =>
             {
-                MetaInfo = new GerberMetaInfoDTO();
-                MetaInfoBase = MetaInfo;
-                MetaInfo.DPI = dpi;
-                MetaInfo.Scale = (int)Math.Pow(10, Header.TrailingDigits) / dpi;
-                MetaInfo.Bounds = CalculateBounds();
-                MetaInfo.PolarityLayers.Add(new PlarityLayerDTO()
+                MetaData = new GerberMetaDataDTO();
+                MetaDataBase = MetaData;
+                MetaData.DPI = dpi;
+                MetaData.Scale = (int)Math.Pow(10, Header.TrailingDigits) / dpi;
+                MetaData.Bounds = CalculateBounds();
+                MetaData.PolarityLayers.Add(new PlarityLayerDTO()
                 {
                     Polarity = 'D'
                 });
                 var counter = 0;
-                Draws.ToObservable().Subscribe(
-                    draw =>
+                Traces.ToObservable().Subscribe(
+                    trace =>
                     {
-                        updateMetaInfo(draw, 0);
+                        updateMetaData(trace, 0);
                         observer.OnNext(++counter);
                     },
                     ex => observer.OnError(ex),
@@ -68,14 +70,15 @@ namespace Gerber
         /// <summary>
         /// Update rows
         /// </summary>
-        /// <param name="draw"></param>
-        private void updateMetaInfo(GerberDrawDTO draw, int layerIndex)
+        /// <param name="trace"></param>
+        private void updateMetaData(GerberTraceDTO trace, int layerIndex)
         {
-            IHelperAperture helper = helperR;
-            helper.UpdateRows(MetaInfo, draw, Header.Apertures.Where(a => a.Aperture == draw.Aperture).Single(),
+            var aperture = Header.Apertures.Where(a => a.Aperture == trace.Aperture).Single();
+            MetaData metadata = metadataCreators.Single(m => m.Key == aperture.Shape).Value;
+            metadata.Create(MetaData, trace, aperture,
                 layerIndex,
-                MetaInfo.Bounds.Top / MetaInfo.Scale,
-                MetaInfo.Bounds.Bottom / MetaInfo.Scale);
+                MetaData.Bounds.Top / MetaData.Scale,
+                MetaData.Bounds.Bottom / MetaData.Scale);
         }
 
         /// <summary>
@@ -84,9 +87,9 @@ namespace Gerber
         /// <returns>Bound area of Gerber</returns>
         private Rectangle CalculateBounds()
         {
-            var auxPoint = Draws[0].AbsolutePointStart;
+            var auxPoint = Traces[0].AbsolutePointStart;
             var bounds = new Rectangle(auxPoint.X, auxPoint.Y, 0, 0);
-            Draws.ForEach(d =>
+            Traces.ForEach(d =>
             {
                 var modifiers = Header.Apertures.Where(a => a.Aperture == d.Aperture).Single().Modifiers;
                 var apertureWidth = modifiers[0] / 2;

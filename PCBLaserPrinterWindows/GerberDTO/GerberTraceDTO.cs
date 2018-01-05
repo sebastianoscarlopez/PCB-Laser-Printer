@@ -2,7 +2,7 @@
 
 namespace Gerber
 {
-    public class GerberDrawDTO
+    public class GerberTraceDTO
     {
         public string GCode { get; set; }
         public bool IsLPDark { get; set; }

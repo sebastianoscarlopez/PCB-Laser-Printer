@@ -16,7 +16,7 @@ namespace Gerber
     /// Call ClassifyRows method
     /// Call GenerateDataDraw method
     /// 
-    /// Next pass the Draws and and Header to GerberMetaInfo
+    /// Next pass the Draws and and Header to GerberMetaData
     /// </summary>
     public class GerberFileParser
     {
@@ -24,14 +24,14 @@ namespace Gerber
         private List<GerberRow> rows;
 
         /// <summary>
-        /// Header usefull for GerberMetaInfo, previous to use must call GenerateDataDraw
+        /// Header usefull for GerberMetaData, previous to use must call GenerateDataTrace
         /// </summary>
         public GerberHeaderDTO Header = new GerberHeaderDTO();
 
         /// <summary>
-        /// Draws usefull for GerberMetaInfo, previous to use must call GenerateDataDraw
+        /// Draws usefull for GerberMetaData, previous to use must call GenerateDataDraw
         /// </summary>
-        public List<GerberDrawDTO> Draws = new List<GerberDrawDTO>();
+        public List<GerberTraceDTO> Draws = new List<GerberTraceDTO>();
         
         /// <summary>
         /// Construct the parser
@@ -110,7 +110,7 @@ namespace Gerber
                     var statusProcess = new StatusProcessDTO() {
                         ProcessName = ConstantMessage.DataDrawProcessing
                     };
-                    GerberDrawDTO lastDrawInfo = new GerberDrawDTO
+                    GerberTraceDTO lastDrawInfo = new GerberTraceDTO
                     {
                         GCode = "G01",
                         ApertureMode = 2,
@@ -168,7 +168,7 @@ namespace Gerber
                                                 }
                                                 break;
                                             case "G54": // Aperture change
-                                                lastDrawInfo = new GerberDrawDTO{
+                                                lastDrawInfo = new GerberTraceDTO{
                                                     GCode = lastDrawInfo.GCode,
                                                     Aperture = int.Parse(r.rowText.Substring(4, 2)),
                                                     ApertureMode = lastDrawInfo.ApertureMode,
@@ -255,7 +255,7 @@ namespace Gerber
         /// <param name="text"></param>
         /// <param name="lastDrawInfo"></param>
         /// <returns></returns>
-        private GerberDrawDTO getDataDraw(string text, GerberDrawDTO lastDrawInfo)
+        private GerberTraceDTO getDataDraw(string text, GerberTraceDTO lastDrawInfo)
         {
             var re = new Regex(@"^(G\d\d)?(?:X([-]?\d+))?(?:Y([-]?\d+))?(?:D(0[1-3]{1}))?\*$");
             var matches = re.Matches(text);
@@ -263,7 +263,7 @@ namespace Gerber
             {
                 return null;
             }
-            var di = new GerberDrawDTO();
+            var di = new GerberTraceDTO();
 
             var gGC = matches[0].Groups[1];
             var gX = matches[0].Groups[2];

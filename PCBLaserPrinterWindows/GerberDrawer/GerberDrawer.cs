@@ -14,12 +14,12 @@ namespace Gerber
         {
         }
 
-        public Bitmap Draw(GerberMetaInfoDTO metaInfo)
+        public Bitmap Draw(GerberMetaDataDTO metaData)
         {
-            var image = new Bitmap(metaInfo.Bounds.Width / metaInfo.Scale + 1, Math.Abs(metaInfo.Bounds.Height) / metaInfo.Scale + 1);
-            image.SetResolution(metaInfo.DPI, metaInfo.DPI);
-            var offsetX = metaInfo.Bounds.X / metaInfo.Scale * -1;
-            var offsetY = (metaInfo.Bounds.Y + metaInfo.Bounds.Height) / metaInfo.Scale * -1;
+            var image = new Bitmap(metaData.Bounds.Width / metaData.Scale + 1, Math.Abs(metaData.Bounds.Height) / metaData.Scale + 1);
+            image.SetResolution(metaData.DPI, metaData.DPI);
+            var offsetX = metaData.Bounds.X / metaData.Scale * -1;
+            var offsetY = (metaData.Bounds.Y + metaData.Bounds.Height) / metaData.Scale * -1;
             Graphics g = Graphics.FromImage(image);
             Pen penAux = new Pen(Color.LightGray, 1);
             for (var h = 0; h < image.Height; h++)
@@ -28,7 +28,7 @@ namespace Gerber
             }
             var color = Color.Green;
             Pen pen = new Pen(color, 1);
-            metaInfo.PolarityLayers.ForEach(
+            metaData.PolarityLayers.ForEach(
                 p => p.Rows.ForEach(r =>
                         r.Columns.ForEach(c =>
                         {

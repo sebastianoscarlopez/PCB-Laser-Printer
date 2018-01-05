@@ -1,105 +1,52 @@
-﻿using System;
+﻿using Gerber;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gerber;
-using System.Drawing;
 
-namespace GerberMetaInfo
+namespace GerberMetaData
 {
-    /// <summary>
-    /// GerberMetaInfo use this class to update metainfo with R aperture
-    /// </summary>
-    class HelperR : IHelperAperture
+    internal abstract class MetaData
     {
         /// <summary>
-        /// 
+        /// It do metadata processing the draw
         /// </summary>
-        /// <param name="MetaInfo">Meta data to update</param>
-        /// <param name="draw">Data of draw</param>
+        /// <param name="MetaData">Meta data to update</param>
+        /// <param name="trace">Trace data</param>
         /// <param name="aperture">Aperture data to draw</param>
         /// <param name="layerIndex">Layer Index</param>
         /// <param name="rowFrom">Top row index </param>
         /// <param name="rowTill">Bottom row index</param>
-        public void UpdateRows(GerberMetaInfoDTO MetaInfo, GerberDrawDTO draw, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
+        abstract public void Create(GerberMetaDataDTO MetaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill);
+
+        /// <summary>
+        /// Add columns to row, row is created whether isn't exist
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="rowIndex"></param>
+        /// <param name="columns"></param>
+        protected void AddColumns(PlarityLayerDTO layer, int rowIndex, List<ColumnDataDTO> columns)
         {
-            // Flash with end coordinate
-            var topRow = draw.AbsolutePointEnd.Y + aperture.Modifiers[0] / 2;
-            var bottomRow = topRow - aperture.Modifiers[0];
-            topRow /= MetaInfo.Scale;
-            bottomRow /= MetaInfo.Scale;
-
-            var leftColumn = draw.AbsolutePointEnd.X - aperture.Modifiers[0] / 2;
-            var rightColumn = leftColumn + aperture.Modifiers[0];
-            leftColumn /= MetaInfo.Scale;
-            rightColumn /= MetaInfo.Scale;
-
-            if (rowFrom < topRow)
+            var row = layer.Rows.Where(r => r.RowIndex == rowIndex).FirstOrDefault();
+            if (row == null)
             {
-                topRow = rowFrom;
+                row = new RowDataDTO()
+                {
+                    RowIndex = rowIndex
+                };
+                row.Columns.AddRange(columns);
+                layer.Rows.Add(row);
             }
-            if (rowTill > bottomRow)
+            else
             {
-                bottomRow = rowTill;
-            }
-
-            var layer = MetaInfo.PolarityLayers[layerIndex];
-            for (var rowIndex = topRow; rowIndex >= bottomRow; rowIndex--)
-            {
-                var row = layer.Rows.Where(r => r.RowIndex == rowIndex).FirstOrDefault();
-                var columns = new List<ColumnDataDTO>();
-                if (rowIndex == topRow || rowIndex == bottomRow)
-                {
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = leftColumn,
-                        Right = rightColumn,
-                        TypeColumn = TypeColumn.partial,
-                        Draws = new List<GerberDrawDTO> { draw }
-                    });                    
-                }
-                else
-                {
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = leftColumn,
-                        Right = leftColumn,
-                        TypeColumn = TypeColumn.partial,
-                        Draws = new List<GerberDrawDTO> { draw }
-                    });
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = leftColumn + 1,
-                        Right = rightColumn - 1,
-                        TypeColumn = TypeColumn.fill,
-                        Draws = null
-                    });
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = rightColumn,
-                        Right = rightColumn,
-                        TypeColumn = TypeColumn.partial,
-                        Draws = new List<GerberDrawDTO> { draw }
-                    });
-                }
-                if (row == null)
-                {
-                    row = new RowDataDTO()
-                    {
-                        RowIndex = rowIndex
-                    };
-                    row.Columns.AddRange(columns);
-                    layer.Rows.Add(row);
-                }
-                else
-                {
-                    columns.ForEach(column => OverlapColumn(column, row.Columns));
-                }
+                columns.ForEach(column => OverlapColumn(column, row.Columns));
             }
         }
 
-        private void OverlapColumn(ColumnDataDTO column, List<ColumnDataDTO> columns)
+        /// <summary>
+        /// Overlap a column into the row
+        /// </summary>
+        /// <param name="column">New column to overlap</param>
+        /// <param name="columns">Columns in row</param>
+        protected void OverlapColumn(ColumnDataDTO column, List<ColumnDataDTO> columns)
         {
             var overlappedColumns = columns
                 .Where(c => c.Left <= column.Right && c.Right >= column.Left);
@@ -120,7 +67,7 @@ namespace GerberMetaInfo
                                 {
                                     added.Add(new ColumnDataDTO()
                                     {
-                                        Draws = null,
+                                        Traces = null,
                                         TypeColumn = TypeColumn.fill,
                                         Left = overlappedColumn.Left < column.Left
                                         ? overlappedColumn.Left
@@ -156,14 +103,14 @@ namespace GerberMetaInfo
                                 {
                                     added.Add(new ColumnDataDTO()
                                     {
-                                        Draws = column.Draws.Select(d => d).ToList(),
+                                        Traces = column.Traces.Select(d => d).ToList(),
                                         TypeColumn = TypeColumn.partial,
                                         Left = column.Left,
                                         Right = overlappedColumn.Left - 1
                                     });
                                     added.Add(new ColumnDataDTO()
                                     {
-                                        Draws = column.Draws.Select(d => d).ToList(),
+                                        Traces = column.Traces.Select(d => d).ToList(),
                                         TypeColumn = TypeColumn.partial,
                                         Left = overlappedColumn.Right + 1,
                                         Right = column.Right
@@ -181,13 +128,13 @@ namespace GerberMetaInfo
                                 {
                                     added.Add(column);
                                     overlappedColumn.Left = column.Right + 1;
-                                    if(overlappedColumn.Left > overlappedColumn.Right)
+                                    if (overlappedColumn.Left > overlappedColumn.Right)
                                     {
                                         deleted.Add(overlappedColumn);
                                     }
                                     isOmmited = true;
                                 }
-                                else if(column.Right >= overlappedColumn.Right)
+                                else if (column.Right >= overlappedColumn.Right)
                                 {
                                     added.Add(column);
                                     overlappedColumn.Right = column.Left - 1;
@@ -201,7 +148,7 @@ namespace GerberMetaInfo
                                 {
                                     added.Add(new ColumnDataDTO()
                                     {
-                                        Draws = overlappedColumn.Draws.Select(d => d).ToList(),
+                                        Traces = overlappedColumn.Traces.Select(d => d).ToList(),
                                         TypeColumn = TypeColumn.partial,
                                         Left = column.Right + 1,
                                         Right = overlappedColumn.Right
@@ -210,11 +157,11 @@ namespace GerberMetaInfo
                                 }
                                 break;
                             case TypeColumn.partial:
-                                column.Draws.ForEach(d =>
+                                column.Traces.ForEach(d =>
                                 {
-                                    if (!overlappedColumn.Draws.Contains(d))
+                                    if (!overlappedColumn.Traces.Contains(d))
                                     {
-                                        overlappedColumn.Draws.Add(d);
+                                        overlappedColumn.Traces.Add(d);
                                         isOmmited = true;
                                     }
                                 });
@@ -222,7 +169,7 @@ namespace GerberMetaInfo
                                 {
                                     added.Add(new ColumnDataDTO()
                                     {
-                                        Draws = overlappedColumn.Draws,
+                                        Traces = overlappedColumn.Traces,
                                         TypeColumn = TypeColumn.partial,
                                         Left = overlappedColumn.Left < column.Left
                                                                             ? overlappedColumn.Left
@@ -246,23 +193,5 @@ namespace GerberMetaInfo
             columns.RemoveAll(c => deleted.Contains(c));
             added.ForEach(c => OverlapColumn(c, columns));
         }
-        /*
-        private Rectangle GetBoundsWithAperture(CoordinateDTO coordinateStart, CoordinateDTO coordinateEnd, GerberApertureDTO aperture)
-        {
-            var x1 = coordinateStart.X;
-            var x2 = coordinateEnd.X;
-            if (coordinateStart.X < coordinateEnd.X)
-            {
-                var aux = x1;
-                x1 = x2;
-                x2 = aux;
-            }
-            x1 -= aperture.Modifiers[0];
-            x2 += aperture.Modifiers[0];
-            return ;
-        }
-
-        private 
-        */
     }
 }

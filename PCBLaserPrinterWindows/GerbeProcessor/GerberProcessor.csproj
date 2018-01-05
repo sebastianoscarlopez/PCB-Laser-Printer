@@ -71,9 +71,9 @@
       <Project>{73fc0f2f-1cb5-43a6-bc1b-43e902ee3e09}</Project>
       <Name>GerberDTO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GerberMetaInfo\GerberMetaInfo.csproj">
+    <ProjectReference Include="..\GerberMetaInfo\GerberMetaData.csproj">
       <Project>{d62a37a3-9279-4c43-919e-5ffff8176103}</Project>
-      <Name>GerberMetaInfo</Name>
+      <Name>GerberMetaData</Name>
     </ProjectReference>
     <ProjectReference Include="..\GerberParser\GerberParser.csproj">
       <Project>{29299067-772c-4413-bf3d-d12ab40e313b}</Project>

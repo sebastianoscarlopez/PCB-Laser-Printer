@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberParser", "GerberParse
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawerHelper", "DrawerHelper\DrawerHelper.csproj", "{B238C43D-B527-4A4A-8C31-0088CDE8A02D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberMetaInfo", "GerberMetaInfo\GerberMetaInfo.csproj", "{D62A37A3-9279-4C43-919E-5FFFF8176103}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberMetaData", "GerberMetaInfo\GerberMetaData.csproj", "{D62A37A3-9279-4C43-919E-5FFFF8176103}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberDrawer", "GerberDrawer\GerberDrawer.csproj", "{22A3721E-7003-4A31-A3CC-BB0D613282F7}"
 EndProject

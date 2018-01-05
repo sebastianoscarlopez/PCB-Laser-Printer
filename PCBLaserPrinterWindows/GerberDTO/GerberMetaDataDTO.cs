@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Gerber
 {
-    public class GerberMetaInfoDTO
+    public class GerberMetaDataDTO
     {
         public int DPI { get; set; }
         public int Scale { get; set; }
