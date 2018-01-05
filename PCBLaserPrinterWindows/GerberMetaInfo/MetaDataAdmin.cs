@@ -77,8 +77,8 @@ namespace Gerber
             MetaData metadata = metadataCreators.Single(m => m.Key == aperture.Shape).Value;
             metadata.Create(MetaData, trace, aperture,
                 layerIndex,
-                MetaData.Bounds.Top / MetaData.Scale,
-                MetaData.Bounds.Bottom / MetaData.Scale);
+                MetaData.Bounds.Top / MetaData.Scale + 1,
+                MetaData.Bounds.Bottom / MetaData.Scale - 1);
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace Gerber
             {
                 var aperture = Header.Apertures.Single(a => a.Aperture == d.Aperture);
                 var modifiers = aperture.Modifiers;
-                var apertureWidth = (int)(modifiers[0] / (aperture.Shape == 'R' ? 2 : 0.5));
-                var apertureHeight = (int)((modifiers[modifiers.Count > 1 ? 1 : 0]) / (aperture.Shape == 'R' ? 2 : 0.5));
+                var apertureWidth = modifiers[0] / 2;
+                var apertureHeight = modifiers[aperture.Shape == 'R' && modifiers.Count > 1 ? 1 : 0] / 2;
                 if (d.AbsolutePointStart.X - apertureWidth < bounds.Left)
                 {
                     bounds.Width += bounds.X - d.AbsolutePointStart.X + apertureWidth;

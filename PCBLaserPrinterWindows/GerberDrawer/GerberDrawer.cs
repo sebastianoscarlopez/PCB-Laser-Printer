@@ -16,7 +16,9 @@ namespace Gerber
 
         public Bitmap Draw(GerberMetaDataDTO metaData)
         {
-            var image = new Bitmap(metaData.Bounds.Width / metaData.Scale + 1, Math.Abs(metaData.Bounds.Height) / metaData.Scale + 1);
+            var width = metaData.Bounds.Width / metaData.Scale;
+            var height = Math.Abs(metaData.Bounds.Height) / metaData.Scale;
+            var image = new Bitmap(width + 1, height + 1);
             image.SetResolution(metaData.DPI, metaData.DPI);
             var offsetX = metaData.Bounds.X / metaData.Scale * -1;
             var offsetY = (metaData.Bounds.Y + metaData.Bounds.Height) / metaData.Scale * -1;
@@ -34,10 +36,7 @@ namespace Gerber
                         {
                             if (c.Left == c.Right)
                             {
-                                if (c.Left + offsetX > 0 && r.RowIndex + offsetY > 0 && c.Left + offsetX < image.Width  && r.RowIndex + offsetY < image.Height)
-                                {
-                                    image.SetPixel(c.Left + offsetX, r.RowIndex + offsetY, color);
-                                }
+                                image.SetPixel(c.Left + offsetX, r.RowIndex + offsetY, color);
                             }
                             else
                             {
