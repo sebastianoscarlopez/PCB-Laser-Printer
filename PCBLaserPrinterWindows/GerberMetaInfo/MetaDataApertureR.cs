@@ -34,41 +34,25 @@ namespace GerberMetaData
             var layer = MetaData.PolarityLayers[layerIndex];
             for (var rowIndex = topRow; rowIndex >= bottomRow; rowIndex--)
             {
-                var row = layer.Rows.Where(r => r.RowIndex == rowIndex).FirstOrDefault();
+                var row = GetRow(layer, rowIndex);
                 var columns = new List<ColumnDataDTO>();
                 if (rowIndex == topRow || rowIndex == bottomRow)
                 {
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = leftColumn,
-                        Right = rightColumn,
-                        TypeColumn = TypeColumn.partial,
-                        Traces = new List<GerberTraceDTO> { trace }
-                    });                    
+                    columns.Add(
+                        CreateColumn(leftColumn, rightColumn, trace, TypeColumn.partial)
+                        );
                 }
                 else
                 {
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = leftColumn,
-                        Right = leftColumn,
-                        TypeColumn = TypeColumn.partial,
-                        Traces = new List<GerberTraceDTO> { trace }
-                    });
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = leftColumn + 1,
-                        Right = rightColumn - 1,
-                        TypeColumn = TypeColumn.fill,
-                        Traces = null
-                    });
-                    columns.Add(new ColumnDataDTO()
-                    {
-                        Left = rightColumn,
-                        Right = rightColumn,
-                        TypeColumn = TypeColumn.partial,
-                        Traces = new List<GerberTraceDTO> { trace }
-                    });
+                    columns.Add(
+                        CreateColumn(leftColumn, leftColumn, trace, TypeColumn.partial)
+                        );
+                    columns.Add(
+                        CreateColumn(leftColumn + 1, rightColumn - 1, null, TypeColumn.fill)
+                        );
+                    columns.Add(
+                        CreateColumn(rightColumn, rightColumn, trace, TypeColumn.partial)
+                        );
                 }
                 AddColumns(layer, rowIndex, columns);
             }

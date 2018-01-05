@@ -91,9 +91,10 @@ namespace Gerber
             var bounds = new Rectangle(auxPoint.X, auxPoint.Y, 0, 0);
             Traces.ForEach(d =>
             {
-                var modifiers = Header.Apertures.Where(a => a.Aperture == d.Aperture).Single().Modifiers;
-                var apertureWidth = modifiers[0] / 2;
-                var apertureHeight = (modifiers[modifiers.Count > 1 ? 1 : 0]) / 2;
+                var aperture = Header.Apertures.Single(a => a.Aperture == d.Aperture);
+                var modifiers = aperture.Modifiers;
+                var apertureWidth = (int)(modifiers[0] / (aperture.Shape == 'R' ? 2 : 0.5));
+                var apertureHeight = (int)((modifiers[modifiers.Count > 1 ? 1 : 0]) / (aperture.Shape == 'R' ? 2 : 0.5));
                 if (d.AbsolutePointStart.X - apertureWidth < bounds.Left)
                 {
                     bounds.Width += bounds.X - d.AbsolutePointStart.X + apertureWidth;

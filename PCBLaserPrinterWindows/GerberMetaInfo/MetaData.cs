@@ -17,6 +17,22 @@ namespace GerberMetaData
         /// <param name="rowTill">Bottom row index</param>
         abstract public void Create(GerberMetaDataDTO MetaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill);
 
+        protected ColumnDataDTO CreateColumn(int left, int right, GerberTraceDTO trace, TypeColumn typeColumn)
+        {
+            return new ColumnDataDTO()
+            {
+                Left = left,
+                Right = right,
+                TypeColumn = typeColumn,
+                Traces = new List<GerberTraceDTO> { trace }
+            };
+        }
+
+        protected RowDataDTO GetRow(PlarityLayerDTO layer, int rowIndex)
+        {
+            return layer.Rows.Where(r => r.RowIndex == rowIndex).FirstOrDefault();
+        }
+
         /// <summary>
         /// Add columns to row, row is created whether isn't exist
         /// </summary>
