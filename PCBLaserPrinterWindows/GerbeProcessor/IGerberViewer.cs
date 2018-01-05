@@ -11,6 +11,6 @@ namespace Gerber
         void parseComplete();
         void parseError(Exception exception);
         void error(string errorDescription);
-        void refreshCanvas(Bitmap bitmap);
+        void refreshCanvas(Bitmap bitmap, Rectangle bounds, int scale);
     }
 }

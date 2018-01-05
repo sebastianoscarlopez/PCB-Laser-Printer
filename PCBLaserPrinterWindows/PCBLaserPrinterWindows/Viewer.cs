@@ -2,6 +2,7 @@
 using Gerber;
 using System;
 using System.Drawing;
+using System.Globalization;
 using System.Reactive.Linq;
 using System.Windows.Forms;
 
@@ -61,15 +62,19 @@ namespace PCBLaserPrinterWindows
 
         void hideStatus()
         {
-            lblError.Visible = false;
-            lblProcess.Visible = false;
-            barProcess.Visible = false;
-            statusBar.Visible = false;
+            lblStatus.Visible = lblError.Visible = lblProcess.Visible = barProcess.Visible = statusBar.Visible = false;
+            
         }
 
-        public void refreshCanvas(Bitmap bitmap)
+        public void refreshCanvas(Bitmap bitmap, Rectangle bounds, int scale)
         {
             ViewerBox.Image = bitmap;
+            statusBar.Visible = true;
+            lblStatus.Text = string.Format("dpi:{0} size:{1}x{2} scale:1/{3}", 
+                bitmap.HorizontalResolution.ToString(CultureInfo.InvariantCulture),
+                bitmap.Width, bitmap.Height,
+                scale);
+            lblStatus.Visible = true;
         }
     }
 }

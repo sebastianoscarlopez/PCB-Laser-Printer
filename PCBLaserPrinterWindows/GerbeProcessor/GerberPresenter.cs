@@ -26,7 +26,7 @@ namespace Gerber
                 parser.ClassifyRows()
                     .Concat(parser.GenerateDataDraw())
                     .Concat(
-                        metaInfo.GenerateMetaInfo(254)
+                        metaInfo.GenerateMetaInfo(480)
                         .Select(i => new StatusProcessDTO()
                         {
                             ProcessName = "MetaInfo",
@@ -52,7 +52,9 @@ namespace Gerber
         public void startDrawCanvas()
         {
             var drawer = Observable.Start(() => new GerberDrawer().Draw(metaInfo.MetaInfo));
-            drawer.Subscribe((image) => viewer.refreshCanvas(image));
+            drawer
+                .ObserveOn(Dispatcher.CurrentDispatcher)
+                .Subscribe((image) => viewer.refreshCanvas(image, metaInfo.MetaInfo.Bounds, metaInfo.MetaInfo.Scale));
         }
     }
 }

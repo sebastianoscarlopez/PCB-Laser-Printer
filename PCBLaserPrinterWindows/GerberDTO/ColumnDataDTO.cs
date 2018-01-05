@@ -8,7 +8,6 @@ namespace Gerber
 {
     public enum TypeColumn
     {
-        empty,
         fill,
         partial
     }

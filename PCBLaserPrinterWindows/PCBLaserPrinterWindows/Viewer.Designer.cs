@@ -35,6 +35,7 @@
             this.lblProcess = new System.Windows.Forms.ToolStripStatusLabel();
             this.barProcess = new System.Windows.Forms.ToolStripProgressBar();
             this.lblError = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.ViewerBox)).BeginInit();
             this.statusBar.SuspendLayout();
             this.SuspendLayout();
@@ -74,7 +75,8 @@
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblProcess,
             this.barProcess,
-            this.lblError});
+            this.lblError,
+            this.lblStatus});
             this.statusBar.Location = new System.Drawing.Point(0, 389);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(429, 26);
@@ -100,6 +102,12 @@
             this.lblError.Name = "lblError";
             this.lblError.Size = new System.Drawing.Size(39, 21);
             this.lblError.Text = "Error";
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(118, 15);
+            this.lblStatus.Text = "toolStripStatusLabel1";
             // 
             // Viewer
             // 
@@ -131,6 +139,7 @@
         private System.Windows.Forms.ToolStripStatusLabel lblProcess;
         private System.Windows.Forms.ToolStripProgressBar barProcess;
         private System.Windows.Forms.ToolStripStatusLabel lblError;
+        private System.Windows.Forms.ToolStripStatusLabel lblStatus;
     }
 }
 

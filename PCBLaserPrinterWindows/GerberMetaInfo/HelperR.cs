@@ -48,25 +48,53 @@ namespace GerberMetaInfo
             for (var rowIndex = topRow; rowIndex >= bottomRow; rowIndex--)
             {
                 var row = layer.Rows.Where(r => r.RowIndex == rowIndex).FirstOrDefault();
-                var column = new ColumnDataDTO()
+                var columns = new List<ColumnDataDTO>();
+                if (rowIndex == topRow || rowIndex == bottomRow)
                 {
-                    Left = leftColumn,
-                    Right = rightColumn,
-                    TypeColumn = TypeColumn.fill,
-                    Draws = null
-                };
+                    columns.Add(new ColumnDataDTO()
+                    {
+                        Left = leftColumn,
+                        Right = rightColumn,
+                        TypeColumn = TypeColumn.partial,
+                        Draws = new List<GerberDrawDTO> { draw }
+                    });                    
+                }
+                else
+                {
+                    columns.Add(new ColumnDataDTO()
+                    {
+                        Left = leftColumn,
+                        Right = leftColumn,
+                        TypeColumn = TypeColumn.partial,
+                        Draws = new List<GerberDrawDTO> { draw }
+                    });
+                    columns.Add(new ColumnDataDTO()
+                    {
+                        Left = leftColumn + 1,
+                        Right = rightColumn - 1,
+                        TypeColumn = TypeColumn.fill,
+                        Draws = null
+                    });
+                    columns.Add(new ColumnDataDTO()
+                    {
+                        Left = rightColumn,
+                        Right = rightColumn,
+                        TypeColumn = TypeColumn.partial,
+                        Draws = new List<GerberDrawDTO> { draw }
+                    });
+                }
                 if (row == null)
                 {
                     row = new RowDataDTO()
                     {
                         RowIndex = rowIndex
                     };
-                    row.Columns.Add(column);
+                    row.Columns.AddRange(columns);
                     layer.Rows.Add(row);
                 }
                 else
                 {
-                    OverlapColumn(column, row.Columns);
+                    columns.ForEach(column => OverlapColumn(column, row.Columns));
                 }
             }
         }
@@ -74,21 +102,149 @@ namespace GerberMetaInfo
         private void OverlapColumn(ColumnDataDTO column, List<ColumnDataDTO> columns)
         {
             var overlappedColumns = columns
-                .Where(c => c.Left <= column.Right && c.Right >= column.Left)
-                .OrderBy(c => c.Left).ToList();
-            columns.Add(column);
-            foreach(var overlappedColumn in overlappedColumns)
+                .Where(c => c.Left <= column.Right && c.Right >= column.Left);
+            var deleted = new List<ColumnDataDTO>();
+            var added = new List<ColumnDataDTO>();
+            var idxOC = 0;
+            bool isOmmited = false;
+            while (!isOmmited && idxOC < overlappedColumns.Count())
             {
-                if (overlappedColumn.Left < column.Left)
+                var overlappedColumn = overlappedColumns.ElementAt(idxOC++);
+                switch (overlappedColumn.TypeColumn)
                 {
-                    column.Left = overlappedColumn.Left;
-                }
-                if (overlappedColumn.Right > column.Right)
-                {
-                    column.Right = overlappedColumn.Right;
+                    case TypeColumn.fill:
+                        switch (column.TypeColumn)
+                        {
+                            case TypeColumn.fill:
+                                if (column.Left != overlappedColumn.Left || column.Right != overlappedColumn.Right)
+                                {
+                                    added.Add(new ColumnDataDTO()
+                                    {
+                                        Draws = null,
+                                        TypeColumn = TypeColumn.fill,
+                                        Left = overlappedColumn.Left < column.Left
+                                        ? overlappedColumn.Left
+                                        : column.Left,
+                                        Right = overlappedColumn.Right > column.Right
+                                        ? overlappedColumn.Right
+                                        : column.Right
+                                    });
+                                    deleted.Add(overlappedColumn);
+                                }
+                                isOmmited = true;
+                                break;
+                            case TypeColumn.partial:
+                                if (overlappedColumn.Left <= column.Left)
+                                {
+                                    column.Left = overlappedColumn.Right + 1;
+                                    if (column.Left <= column.Right)
+                                    {
+                                        added.Add(column);
+                                    }
+                                    isOmmited = true;
+                                }
+                                else if (overlappedColumn.Right >= column.Right)
+                                {
+                                    column.Right = overlappedColumn.Left - 1;
+                                    if (column.Left <= column.Right)
+                                    {
+                                        added.Add(column);
+                                    }
+                                    isOmmited = true;
+                                }
+                                else
+                                {
+                                    added.Add(new ColumnDataDTO()
+                                    {
+                                        Draws = column.Draws.Select(d => d).ToList(),
+                                        TypeColumn = TypeColumn.partial,
+                                        Left = column.Left,
+                                        Right = overlappedColumn.Left - 1
+                                    });
+                                    added.Add(new ColumnDataDTO()
+                                    {
+                                        Draws = column.Draws.Select(d => d).ToList(),
+                                        TypeColumn = TypeColumn.partial,
+                                        Left = overlappedColumn.Right + 1,
+                                        Right = column.Right
+                                    });
+                                    isOmmited = true;
+                                }
+                                break;
+                        }
+                        break;
+                    case TypeColumn.partial:
+                        switch (column.TypeColumn)
+                        {
+                            case TypeColumn.fill:
+                                if (column.Left <= overlappedColumn.Left)
+                                {
+                                    added.Add(column);
+                                    overlappedColumn.Left = column.Right + 1;
+                                    if(overlappedColumn.Left > overlappedColumn.Right)
+                                    {
+                                        deleted.Add(overlappedColumn);
+                                    }
+                                    isOmmited = true;
+                                }
+                                else if(column.Right >= overlappedColumn.Right)
+                                {
+                                    added.Add(column);
+                                    overlappedColumn.Right = column.Left - 1;
+                                    if (overlappedColumn.Left > overlappedColumn.Right)
+                                    {
+                                        deleted.Add(overlappedColumn);
+                                    }
+                                    isOmmited = true;
+                                }
+                                else
+                                {
+                                    added.Add(new ColumnDataDTO()
+                                    {
+                                        Draws = overlappedColumn.Draws.Select(d => d).ToList(),
+                                        TypeColumn = TypeColumn.partial,
+                                        Left = column.Right + 1,
+                                        Right = overlappedColumn.Right
+                                    });
+                                    overlappedColumn.Right = column.Left - 1;
+                                }
+                                break;
+                            case TypeColumn.partial:
+                                column.Draws.ForEach(d =>
+                                {
+                                    if (!overlappedColumn.Draws.Contains(d))
+                                    {
+                                        overlappedColumn.Draws.Add(d);
+                                        isOmmited = true;
+                                    }
+                                });
+                                if (isOmmited || column.Left != overlappedColumn.Left || column.Right != overlappedColumn.Right)
+                                {
+                                    added.Add(new ColumnDataDTO()
+                                    {
+                                        Draws = overlappedColumn.Draws,
+                                        TypeColumn = TypeColumn.partial,
+                                        Left = overlappedColumn.Left < column.Left
+                                                                            ? overlappedColumn.Left
+                                                                            : column.Left,
+                                        Right = overlappedColumn.Right > column.Right
+                                                                            ? overlappedColumn.Right
+                                                                            : column.Right
+                                    });
+                                    deleted.Add(overlappedColumn);
+                                }
+                                isOmmited = true;
+                                break;
+                        }
+                        break;
                 }
             }
-            columns.RemoveAll(c => overlappedColumns.Contains(c));
+            if (!isOmmited)
+            {
+                columns.Add(column);
+            }
+            columns.RemoveAll(c => deleted.Contains(c));
+            added.ForEach(c => OverlapColumn(c, columns));
         }
         /*
         private Rectangle GetBoundsWithAperture(CoordinateDTO coordinateStart, CoordinateDTO coordinateEnd, GerberApertureDTO aperture)
