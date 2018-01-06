@@ -10,16 +10,19 @@ namespace GerberMetaData
     /// </summary>
     class MetaDataApertureR : MetaData
     {
-        public override void Create(GerberMetaDataDTO MetaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
+        public override void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
         {
-            base.Create(MetaData, trace, aperture, layerIndex, rowFrom, rowTill);
+            base.Create(metaData, trace, aperture, layerIndex, rowFrom, rowTill);
 
             var leftColumn = trace.AbsolutePointEnd.X - aperture.Modifiers[0] / 2;
             var rightColumn = leftColumn + aperture.Modifiers[0];
-            leftColumn /= MetaData.Scale;
-            rightColumn /= MetaData.Scale;
+            leftColumn /= metaData.Scale;
+            rightColumn /= metaData.Scale;
 
-            var layer = new PlarityLayerDTO();
+            var layer = new PlarityLayerDTO()
+            {
+                IsDarkPolarity = metaData.PolarityLayers[layerIndex].IsDarkPolarity
+            };
             for (var rowIndex = topRow; rowIndex >= bottomRow; rowIndex--)
             {
                 var row = GetRow(layer, rowIndex);
@@ -27,19 +30,19 @@ namespace GerberMetaData
                 if (rowIndex == topRow || rowIndex == bottomRow)
                 {
                     columns.Add(
-                        CreateColumn(leftColumn, rightColumn, trace, TypeColumn.partial)
+                        CreateColumn(leftColumn, rightColumn, new List<GerberTraceDTO> { trace }, TypeColumn.partial)
                         );
                 }
                 else
                 {
                     columns.Add(
-                        CreateColumn(leftColumn, leftColumn, trace, TypeColumn.partial)
+                        CreateColumn(leftColumn, leftColumn, new List<GerberTraceDTO> { trace }, TypeColumn.partial)
                         );
                     columns.Add(
                         CreateColumn(leftColumn + 1, rightColumn - 1, null, TypeColumn.fill)
                         );
                     columns.Add(
-                        CreateColumn(rightColumn, rightColumn, trace, TypeColumn.partial)
+                        CreateColumn(rightColumn, rightColumn, new List<GerberTraceDTO> { trace }, TypeColumn.partial)
                         );
                 }
                 AddColumns(layer, rowIndex, columns);
@@ -47,13 +50,9 @@ namespace GerberMetaData
 
             if (aperture.Modifiers.Count == 3)
             {
-                List<CoordinateDTO> hole = MidpointCircle(trace.AbsolutePointEnd.X, trace.AbsolutePointEnd.Y, aperture.Modifiers[2] / 2, topRow, bottomRow);
-                var layerHole = new PlarityLayerDTO();
-                layerHole.Polarity = 'C';
-                ResumePoints(hole, layerHole, trace);
-                MergeLayers(layer, layerHole);
+                MakeHole(metaData, trace, aperture, layer);
             }
-            MergeLayers(MetaData.PolarityLayers[layerIndex], layer);
+            MergeLayers(metaData.PolarityLayers[layerIndex], layer);
         }
     }
 }

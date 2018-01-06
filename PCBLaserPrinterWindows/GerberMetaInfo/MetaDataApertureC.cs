@@ -6,19 +6,29 @@ namespace GerberMetaData
 {
     class MetaDataApertureC : MetaData
     {
-        public override void Create(GerberMetaDataDTO MetaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
+        public override void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
         {
-            base.Create(MetaData, trace, aperture, layerIndex, rowFrom, rowTill);
+            base.Create(metaData, trace, aperture, layerIndex, rowFrom, rowTill);
 
             var points = MidpointCircle(
-                trace.AbsolutePointEnd.X / MetaData.Scale
-                , trace.AbsolutePointEnd.Y / MetaData.Scale
-                , aperture.Modifiers[0] / MetaData.Scale / 2,
+                trace.AbsolutePointEnd.X / metaData.Scale
+                , trace.AbsolutePointEnd.Y / metaData.Scale
+                , aperture.Modifiers[0] / metaData.Scale / 2,
                 topRow,
                 bottomRow);
 
-            var layer = MetaData.PolarityLayers[layerIndex];
+            var layer = new PlarityLayerDTO()
+            {
+                IsDarkPolarity = metaData.PolarityLayers[layerIndex].IsDarkPolarity
+            };
+
             ResumePoints(points, layer, trace);
+
+            if(aperture.Modifiers.Count() == 2)
+            {
+                MakeHole(metaData, trace, aperture, layer);
+            }
+            MergeLayers(metaData.PolarityLayers[layerIndex], layer);
         }
     }
 }

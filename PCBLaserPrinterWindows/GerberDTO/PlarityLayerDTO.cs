@@ -8,7 +8,7 @@ namespace Gerber
 {
     public class PlarityLayerDTO
     {
-        public char Polarity { get; set; }
+        public bool IsDarkPolarity { get; set; }
         public List<RowDataDTO> Rows { get; set; } = new List<RowDataDTO>();
     }
 }

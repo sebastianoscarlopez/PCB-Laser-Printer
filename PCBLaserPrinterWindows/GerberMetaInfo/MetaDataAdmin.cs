@@ -51,7 +51,7 @@ namespace Gerber
                 MetaData.Bounds = CalculateBounds();
                 MetaData.PolarityLayers.Add(new PlarityLayerDTO()
                 {
-                    Polarity = 'D'
+                    IsDarkPolarity = true
                 });
                 var counter = 0;
                 Traces.ToObservable().Subscribe(

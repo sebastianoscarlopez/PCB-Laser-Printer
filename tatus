@@ -1,0 +1,119 @@
+[33mcommit 6eb51ba8569510e7a01d5a86b73edf8a694ef772[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Fri Jan 5 18:27:16 2018 -0300
+
+    Saved work
+
+[33mcommit afefbfa9152ed1a966f23afc997c90091aa43c0d[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Fri Jan 5 13:42:55 2018 -0300
+
+    Saved work
+
+[33mcommit 7219bd01ab062995b9209517b156bb8371ffe48b[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Fri Jan 5 10:41:50 2018 -0300
+
+    Refactoring code
+
+[33mcommit 124f2784e71b58da005a2763be620717489822d7[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Fri Jan 5 01:06:06 2018 -0300
+
+    Saved work
+
+[33mcommit 65d31547dac812641912975661882c284276b1c3[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Thu Jan 4 19:11:02 2018 -0300
+
+    Drawer R aperture in mode 03 (flash)
+
+[33mcommit f4807fc7ebe79d01b2df7037b54004d1c43d610a[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Wed Jan 3 22:25:09 2018 -0300
+
+    Saved work
+
+[33mcommit 7bcf2c2effacb120f3227468310fff164652b858[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Tue Jan 2 22:04:54 2018 -0300
+
+    Saved work
+
+[33mcommit 583d07b57e3ffd3c0273b487c504e926fa2b9fe4[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Mon Dec 25 18:42:56 2017 -0300
+
+    Saved work
+
+[33mcommit f88a7f8c7a2e347d7fa9e5c27069576d541b4752[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Mon Dec 25 17:24:32 2017 -0300
+
+    Gerber parser Basic implementation ready
+
+[33mcommit d7d39903b1a62658aec4a04030d05678a03e838f[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Mon Dec 25 14:20:05 2017 -0300
+
+    Gerber parser have been creating
+
+[33mcommit ece4260eac2acd3a6343d0ee38a9c122065aaca1[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Mon Dec 25 02:13:32 2017 -0300
+
+    Gerber parser have been creating
+
+[33mcommit e6cec0352f437f8fdbe94c95736529bdbb3e5fdd[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sun Dec 24 19:39:51 2017 -0300
+
+    Gerber parser have been creating
+
+[33mcommit b663addcb7b76bfebabea35a1cc3651681d432ff[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sun Dec 24 17:06:17 2017 -0300
+
+    Gerber parser have been creating
+
+[33mcommit 172be3592d107d8ef4fa0c560ed479bbf9daf21d[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sat Dec 23 23:11:05 2017 -0300
+
+    Starting with gerber
+
+[33mcommit 9609acb6bcf7f2c4992c83e4f0f5f7d078af94b0[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Thu Dec 21 19:57:44 2017 -0300
+
+    Usart with DMA implemented
+
+[33mcommit d12ab214026d6bc9a5792d391c92d49a5719ec38[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sun Dec 17 03:46:07 2017 -0300
+
+    Saved work
+
+[33mcommit aeb702ccb0660433bc0bcf864ad31debb64fa693[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sun Dec 17 03:45:38 2017 -0300
+
+    Saved work
+
+[33mcommit 46cef266058f5fc5e6cb731c2d061b16d1702b28[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sun Dec 17 02:26:36 2017 -0300
+
+    Saved work
+
+[33mcommit 6d65411e50badeeafdd920efa2172807213f0fd7[m
+Author: sebas <sebastianoscarlopz@gmail.com>
+Date:   Sun Dec 17 02:00:04 2017 -0300
+
+    Saved work
+
+[33mcommit 982c4a2149d433bcaee30357e8fb72fba6d15cc8[m
+Author: Sebastian Oscar Lopez <sebastianoscarlopez@gmail.com>
+Date:   Sun Dec 10 22:48:43 2017 -0300
+
+    Initial commit
