@@ -6,9 +6,9 @@ namespace GerberMetaData
 {
     class MetaDataApertureC : MetaData
     {
-        public override void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
+        public override void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTo)
         {
-            base.Create(metaData, trace, aperture, layerIndex, rowFrom, rowTill);
+            base.Create(metaData, trace, aperture, layerIndex, rowFrom, rowTo);
 
             var points = MidpointCircle(
                 trace.AbsolutePointEnd.X / metaData.Scale

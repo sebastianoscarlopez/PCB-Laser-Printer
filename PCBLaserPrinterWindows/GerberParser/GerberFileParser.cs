@@ -148,10 +148,10 @@ namespace Gerber
                                                 Header.isAbsolute = false;
                                                 break;
                                             case "G70": // Inch unit expressed in Micrometer
-                                                Header.Unit = 25400;
+                                                Header.UnitInMicroMeters = 25400;
                                                 break;
                                             case "G71": // Millimeter Unit expressed in Micrometer
-                                                Header.Unit = 1000;
+                                                Header.UnitInMicroMeters = 1000;
                                                 break;
                                             case "G01": // Linear mode
                                                 var di = getDataDraw(r.rowText, lastDrawInfo);

@@ -8,7 +8,7 @@ namespace Gerber
         public bool isAbsolute { get; set; }
         public int LeadingDigits { get; set; }
         public int TrailingDigits { get; set; }
-        public int Unit { get; set; }
+        public int UnitInMicroMeters { get; set; }
         public List<GerberApertureDTO> Apertures { get; set; } = new List<GerberApertureDTO>();
     }
 }

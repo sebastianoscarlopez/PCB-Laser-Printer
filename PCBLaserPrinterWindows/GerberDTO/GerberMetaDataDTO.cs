@@ -9,6 +9,8 @@ namespace Gerber
 {
     public class GerberMetaDataDTO
     {
+        public int TrailingDigits { get; set; }
+        public int UnitInMicroMeters { get; set; }
         public int DPI { get; set; }
         public int Scale { get; set; }
         public Rectangle Bounds { get; set; }

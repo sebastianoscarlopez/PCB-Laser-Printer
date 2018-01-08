@@ -16,8 +16,8 @@ namespace GerberMetaData
         /// <param name="aperture">Aperture data to draw</param>
         /// <param name="layerIndex">Layer Index</param>
         /// <param name="rowFrom">Top row index </param>
-        /// <param name="rowTill">Bottom row index</param>
-        virtual public void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTill)
+        /// <param name="rowTo">Bottom row index</param>
+        virtual public void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTo)
         {
             topRow = trace.AbsolutePointEnd.Y + aperture.Modifiers[aperture.Shape == 'R' && aperture.Modifiers.Count > 1 ? 1 : 0] / 2;
             bottomRow = topRow - aperture.Modifiers[aperture.Shape == 'R' && aperture.Modifiers.Count > 1 ? 1 : 0];
@@ -27,9 +27,9 @@ namespace GerberMetaData
             {
                 topRow = rowFrom;
             }
-            if (rowTill > bottomRow)
+            if (rowTo > bottomRow)
             {
-                bottomRow = rowTill;
+                bottomRow = rowTo;
             }
         }
 

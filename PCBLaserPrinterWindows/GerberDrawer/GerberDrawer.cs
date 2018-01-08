@@ -23,7 +23,7 @@ namespace Gerber
             var offsetX = metaData.Bounds.X / metaData.Scale * -1;
             var offsetY = (metaData.Bounds.Y + metaData.Bounds.Height) / metaData.Scale * -1;
             Graphics g = Graphics.FromImage(image);
-            Pen penAux = new Pen(Color.LightGray, 1);
+            Pen penAux = new Pen(Color.Gray, 1);
             for (var h = 0; h < image.Height; h++)
             {
                 g.DrawLine(penAux, 0, h, image.Width, h);

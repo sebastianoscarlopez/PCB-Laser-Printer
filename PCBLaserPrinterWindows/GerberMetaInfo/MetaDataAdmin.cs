@@ -46,6 +46,8 @@ namespace Gerber
             {
                 MetaData = new GerberMetaDataDTO();
                 MetaDataBase = MetaData;
+                MetaData.UnitInMicroMeters = Header.UnitInMicroMeters;
+                MetaData.TrailingDigits = Header.TrailingDigits;
                 MetaData.DPI = dpi;
                 MetaData.Scale = (int)Math.Pow(10, Header.TrailingDigits) / dpi;
                 MetaData.Bounds = CalculateBounds();

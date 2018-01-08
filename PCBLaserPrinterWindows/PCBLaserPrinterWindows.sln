@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCBLaserPrinterWindows", "PCBLaserPrinterWindows\PCBLaserPrinterWindows.csproj", "{E9F4A8E0-167E-41F2-8B8E-EC831CCFF602}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCBLaserPrinter", "PCBLaserPrinterWindows\PCBLaserPrinter.csproj", "{E9F4A8E0-167E-41F2-8B8E-EC831CCFF602}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberDTO", "GerberDTO\GerberDTO.csproj", "{73FC0F2F-1CB5-43A6-BC1B-43E902EE3E09}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberProcessor", "GerbePro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberParser", "GerberParser\GerberParser.csproj", "{29299067-772C-4413-BF3D-D12AB40E313B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawerHelper", "DrawerHelper\DrawerHelper.csproj", "{B238C43D-B527-4A4A-8C31-0088CDE8A02D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCBLaserPrinterCommunication", "DrawerHelper\PCBLaserPrinterCommunication.csproj", "{B238C43D-B527-4A4A-8C31-0088CDE8A02D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GerberMetaData", "GerberMetaInfo\GerberMetaData.csproj", "{D62A37A3-9279-4C43-919E-5FFFF8176103}"
 EndProject

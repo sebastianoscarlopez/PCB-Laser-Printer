@@ -81,6 +81,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -97,9 +98,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DrawerHelper\DrawerHelper.csproj">
+    <ProjectReference Include="..\DrawerHelper\PCBLaserPrinterCommunication.csproj">
       <Project>{B238C43D-B527-4A4A-8C31-0088CDE8A02D}</Project>
-      <Name>DrawerHelper</Name>
+      <Name>PCBLaserPrinterCommunication</Name>
     </ProjectReference>
     <ProjectReference Include="..\GerbeProcessor\GerberProcessor.csproj">
       <Project>{893a94e2-fc8f-4b86-a677-c4079fb35f87}</Project>
@@ -109,6 +110,9 @@
       <Project>{73fc0f2f-1cb5-43a6-bc1b-43e902ee3e09}</Project>
       <Name>GerberDTO</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pcb.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

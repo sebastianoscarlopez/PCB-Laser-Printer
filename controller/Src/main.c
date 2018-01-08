@@ -105,13 +105,12 @@ int main(void)
 	  uartStartReceive();
 	  while(!uartIsReady());
 	  uint8_t* data = uartGetData();
-	  ready = strcmp(data, "READY?") == 0;
+	  ready = strcmp(data, "Ready?\n") == 0;
   }
 
   // Send Ready to host
   while(!uartIsReady());
-  uartTransmit("YES");
-
+  uartTransmit("Yes\n");
 
   /* USER CODE END 2 */
 
@@ -122,13 +121,14 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+	  waitCommand();
 	  if(uartIsReady()){
-		  uartTransmit(uartGetData());
+		  //uartTransmit(uartGetData());
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 		  //uartTransmit("Receive complete:");
 		  // Echo received
-		  uartTransmit(uartGetData());
-		  uartStartReceive();
+		  //uartTransmit(uartGetData());
+		  //uartStartReceive();
 		  HAL_Delay(1000);
 	  }
 	  HAL_Delay(100);

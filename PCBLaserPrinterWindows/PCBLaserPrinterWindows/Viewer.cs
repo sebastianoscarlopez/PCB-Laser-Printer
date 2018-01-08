@@ -1,7 +1,5 @@
-﻿using DrawerHelper;
-using Gerber;
+﻿using Gerber;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Reactive.Linq;
@@ -23,6 +21,8 @@ namespace PCBLaserPrinterWindows
                 eh => btnProcesar.Click -= eh
             )
             .Subscribe(_ => presenter.processGerber(txtFile.Text));
+            ViewerBox.Controls.Add(PreviewBox);
+            PreviewBox_UpdateLocation();
         }
 
         private void Viewer_Load(object sender, EventArgs e)
@@ -76,6 +76,32 @@ namespace PCBLaserPrinterWindows
                 bitmap.Width, bitmap.Height,
                 scale);
             lblStatus.Visible = true;
+        }
+
+        public void startPrinter()
+        {
+            BackColor = Color.Green;
+        }
+
+        public void endPrinter()
+        {
+            BackColor = Color.Red;
+        }
+
+        private void Viewer_Resize(object sender, EventArgs e)
+        {
+            PreviewBox_UpdateLocation();
+        }
+        private void PreviewBox_UpdateLocation()
+        {
+            PreviewBox.Location = new Point((int)(ViewerBox.Width * 0.66), (int)(ViewerBox.Height * 0.66));
+            PreviewBox.Width = ViewerBox.Width - PreviewBox.Left;
+            PreviewBox.Height = ViewerBox.Height - PreviewBox.Top;
+        }
+
+        private void btnPrinter_Click(object sender, EventArgs e)
+        {
+            presenter.print();
         }
     }
 }

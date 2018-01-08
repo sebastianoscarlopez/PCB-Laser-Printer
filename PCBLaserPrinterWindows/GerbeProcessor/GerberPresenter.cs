@@ -3,6 +3,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Threading;
 using Gerber;
+using PCBLaserPrinterCommunication;
 
 namespace Gerber
 {
@@ -10,6 +11,7 @@ namespace Gerber
     {
         private readonly IGerberViewer viewer;
         private MetaDataAdmin metaData;
+        private readonly Printer printer = new Printer();
 
         public GerberPresenter(IGerberViewer viewer)
         {
@@ -26,7 +28,7 @@ namespace Gerber
                 parser.ClassifyRows()
                     .Concat(parser.GenerateDataDraw())
                     .Concat(
-                        metaData.GenerateMetaData(1000)
+                        metaData.GenerateMetaData(100)
                         .Select(i => new StatusProcessDTO()
                         {
                             ProcessName = "MetaData",
@@ -55,6 +57,19 @@ namespace Gerber
             drawer
                 .ObserveOn(Dispatcher.CurrentDispatcher)
                 .Subscribe((image) => viewer.refreshCanvas(image, metaData.MetaData.Bounds, metaData.MetaData.Scale));
+        }
+
+        public void print()
+        {
+            if (printer.Test())
+            {
+                viewer.startPrinter();
+                printer.Print(metaData.MetaData);
+            }
+            else
+            {
+                viewer.endPrinter();
+            }
         }
     }
 }

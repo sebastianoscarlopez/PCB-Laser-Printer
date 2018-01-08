@@ -36,8 +36,11 @@
             this.barProcess = new System.Windows.Forms.ToolStripProgressBar();
             this.lblError = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.PreviewBox = new System.Windows.Forms.PictureBox();
+            this.btnPrinter = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ViewerBox)).BeginInit();
             this.statusBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PreviewBox)).BeginInit();
             this.SuspendLayout();
             // 
             // ViewerBox
@@ -48,7 +51,7 @@
             this.ViewerBox.BackColor = System.Drawing.Color.Black;
             this.ViewerBox.Location = new System.Drawing.Point(12, 40);
             this.ViewerBox.Name = "ViewerBox";
-            this.ViewerBox.Size = new System.Drawing.Size(405, 363);
+            this.ViewerBox.Size = new System.Drawing.Size(405, 498);
             this.ViewerBox.TabIndex = 0;
             this.ViewerBox.TabStop = false;
             // 
@@ -77,9 +80,9 @@
             this.barProcess,
             this.lblError,
             this.lblStatus});
-            this.statusBar.Location = new System.Drawing.Point(0, 389);
+            this.statusBar.Location = new System.Drawing.Point(0, 524);
             this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(429, 26);
+            this.statusBar.Size = new System.Drawing.Size(582, 26);
             this.statusBar.TabIndex = 3;
             this.statusBar.Text = "statusStrip1";
             this.statusBar.Visible = false;
@@ -109,12 +112,37 @@
             this.lblStatus.Size = new System.Drawing.Size(118, 15);
             this.lblStatus.Text = "toolStripStatusLabel1";
             // 
+            // PreviewBox
+            // 
+            this.PreviewBox.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.PreviewBox.BackColor = System.Drawing.Color.Transparent;
+            this.PreviewBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PreviewBox.Location = new System.Drawing.Point(208, 316);
+            this.PreviewBox.Name = "PreviewBox";
+            this.PreviewBox.Size = new System.Drawing.Size(209, 222);
+            this.PreviewBox.TabIndex = 4;
+            this.PreviewBox.TabStop = false;
+            // 
+            // btnPrinter
+            // 
+            this.btnPrinter.BackColor = System.Drawing.Color.Transparent;
+            this.btnPrinter.BackgroundImage = global::PCBLaserPrinterWindows.Properties.Resources.pcb;
+            this.btnPrinter.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.btnPrinter.Location = new System.Drawing.Point(511, 10);
+            this.btnPrinter.Name = "btnPrinter";
+            this.btnPrinter.Size = new System.Drawing.Size(59, 46);
+            this.btnPrinter.TabIndex = 5;
+            this.btnPrinter.UseVisualStyleBackColor = false;
+            this.btnPrinter.Click += new System.EventHandler(this.btnPrinter_Click);
+            // 
             // Viewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(429, 415);
+            this.ClientSize = new System.Drawing.Size(582, 550);
+            this.Controls.Add(this.btnPrinter);
+            this.Controls.Add(this.PreviewBox);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.btnProcesar);
             this.Controls.Add(this.txtFile);
@@ -122,9 +150,11 @@
             this.Name = "Viewer";
             this.Text = "Gerber Viewer";
             this.Load += new System.EventHandler(this.Viewer_Load);
+            this.Resize += new System.EventHandler(this.Viewer_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.ViewerBox)).EndInit();
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PreviewBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -140,6 +170,8 @@
         private System.Windows.Forms.ToolStripProgressBar barProcess;
         private System.Windows.Forms.ToolStripStatusLabel lblError;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+        private System.Windows.Forms.PictureBox PreviewBox;
+        private System.Windows.Forms.Button btnPrinter;
     }
 }
 

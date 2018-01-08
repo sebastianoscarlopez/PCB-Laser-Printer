@@ -236,10 +236,11 @@ uint8_t* uartGetData(){
 	return rxBuffer;
 }
 
-void uartTransmit(uint8_t* data){
+void uartTransmit(uint8_t* data, uint8_t bcc){
 	uint8_t len = strlen(data);
-	memcpy(&txBuffer, data, len);
-	HAL_UART_Transmit_DMA(&huart2, txBuffer, len);
+	txBuffer[0] = bcc;
+	memcpy(&txBuffer[1], data, len);
+	HAL_UART_Transmit_DMA(&huart2, txBuffer, len + 1);
 }
 
 
