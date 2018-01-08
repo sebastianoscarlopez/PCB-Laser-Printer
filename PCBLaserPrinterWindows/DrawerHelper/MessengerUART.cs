@@ -22,7 +22,7 @@ namespace PCBLaserPrinterCommunication
 
         public void Send(string message)
         {
-            serialPort.WriteLine(message);
+            serialPort.Write(message);
         }
 
         public string Receive()

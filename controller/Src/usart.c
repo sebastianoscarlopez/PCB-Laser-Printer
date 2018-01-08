@@ -239,8 +239,8 @@ uint8_t* uartGetData(){
 void uartTransmit(uint8_t* data, uint8_t bcc){
 	uint8_t len = strlen(data);
 	txBuffer[0] = bcc;
-	memcpy(&txBuffer[1], data, len);
-	HAL_UART_Transmit_DMA(&huart2, txBuffer, len + 1);
+	memcpy(&txBuffer[1], data, len + 1);
+	HAL_UART_Transmit_DMA(&huart2, txBuffer, len + 2);
 }
 
 

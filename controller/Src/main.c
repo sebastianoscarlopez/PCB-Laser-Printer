@@ -45,7 +45,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "helper/communicationHelper.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -99,19 +99,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 
-  // Wait ready from host
-  uint8_t ready = 0;
-  while(!ready){
-	  uartStartReceive();
-	  while(!uartIsReady());
-	  uint8_t* data = uartGetData();
-	  ready = strcmp(data, "Ready?\n") == 0;
-  }
-
-  // Send Ready to host
-  while(!uartIsReady());
-  uartTransmit("Yes\n");
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,18 +108,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  waitCommand();
-	  if(uartIsReady()){
-		  //uartTransmit(uartGetData());
-		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-		  //uartTransmit("Receive complete:");
-		  // Echo received
-		  //uartTransmit(uartGetData());
-		  //uartStartReceive();
-		  HAL_Delay(1000);
-	  }
-	  HAL_Delay(100);
-	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	  uartWaitSend("Ready?\n");
+	  printWait();
   }
   /* USER CODE END 3 */
 

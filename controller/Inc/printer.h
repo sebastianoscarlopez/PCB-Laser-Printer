@@ -12,9 +12,9 @@
 
 #endif /* PRINTER_H_ */
 
-void waitPrintig();
+void printWait();
 
-void startPrint();
+void printStart();
 
 void sendUnit();
 

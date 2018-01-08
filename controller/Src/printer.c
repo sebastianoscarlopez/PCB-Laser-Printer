@@ -7,16 +7,28 @@
 
 #include "printer.h"
 
-void waitPrintig(){
-	int8_t isWaiting = 1;
+void printWait(){
+	uint8_t isWaiting = 1;
+	uint8_t* data;
+
 	while(isWaiting){
-		  uartStartReceive();
-		  while(!uartIsReady());
+		data = uartWaitReceive();
+		isWaiting = strcmp("printStart", data);
 	}
+
+	printStart();
 }
 
-void startPrint();
+void printStart(){
+	//TODO
+}
 
-void sendUnit();
+void sendUnit()
+{
+	//TODO
+}
 
-void getSize();
+void getSize()
+{
+	//TODO
+}
