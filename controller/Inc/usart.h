@@ -69,7 +69,7 @@ void uartReceive();
 void uartSetReady();
 uint8_t uartIsReady();
 char* uartGetData();
-void uartTransmit(char* data, uint8_t bcc);
+void uartTransmit(char* data);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

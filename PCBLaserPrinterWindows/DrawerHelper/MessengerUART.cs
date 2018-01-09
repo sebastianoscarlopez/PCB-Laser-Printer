@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.IO.Ports;
+using System.Globalization;
 
 namespace PCBLaserPrinterCommunication
 {
@@ -15,15 +16,17 @@ namespace PCBLaserPrinterCommunication
                 BaudRate = 9600,
                 Parity = Parity.None,
                 DataBits = 8,
-                ReadTimeout = 10000,
+                ReadTimeout = 100,
                 StopBits = StopBits.One,
-                WriteTimeout = 1000
+                WriteTimeout = 100
             };
         }
 
         public void Send(string message)
         {
-            serialPort.WriteLine(message.Insert(0, getBCC(message).ToString()));
+            message += "\n";
+            var msg = string.Format("{0}{1}", getBCC(message).ToString(CultureInfo.InvariantCulture), message);
+            serialPort.Write(msg);
         }
 
         public string Receive()
@@ -47,7 +50,7 @@ namespace PCBLaserPrinterCommunication
                     serialPort.Open();
                     if (serialPort.IsOpen)
                     {
-                        Send("Ready?");
+                        Send("printStart");
                         while (!connected)
                         {
                             var response = Receive();
@@ -73,14 +76,15 @@ namespace PCBLaserPrinterCommunication
         private char getBCC(string data)
         {
             char dv = '\0';
-            int len = data.Length - 2; // BCC and CHARACTER_END
+            int len = data.Length;
             if (len < 3 || len > MAX_MESSAGE)
             {
                 return dv;
             }
-            for (int i = 1; i < len; i++)
+            for (int i = 0; i < len; i++)
             {
                 dv ^= data[i];
+                
             }
             return dv;
         }

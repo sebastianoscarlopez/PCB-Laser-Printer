@@ -21,10 +21,10 @@ char* uartWaitReceive()
 		waitReady();
 		data = uartGetData();
 
-		uint8_t bcc = getBCC(data);
+		uint8_t bcc = getBCC(&data[1]);
 		len = strlen((char*)&data[1]);
 		receiveOk = bcc == data[0] && data[len] == CHARACTER_END;
- 		uartTransmit(receiveOk ? "OK": "FAILED", bcc);
+ 		uartTransmit(receiveOk ? "OK": "FAILED");
 	}while(!receiveOk);
 
 	data[len] = '\0';
@@ -36,14 +36,15 @@ void uartWaitSend(char* data){
 	uint8_t sendOk;
 	size_t len = strlen(data);
 
-	strcpy((char*)bufferAux, data);
-	bufferAux[len] = CHARACTER_END;
-	bufferAux[len + 1] = '\0';
+	strcpy((char*)bufferAux[1], data);
+	bufferAux[len + 1] = CHARACTER_END;
+	bufferAux[len + 2] = '\0';
 	do
 	{
 		waitReady();
-		uint8_t bcc = getBCC(bufferAux);
-		uartTransmit(data, bcc);
+		uint8_t bcc = getBCC(&bufferAux[1]);
+		bufferAux[0] = (char)bcc;
+		uartTransmit(bufferAux);
 		waitReady();
 		uartStartReceive();
 
@@ -56,12 +57,12 @@ void uartWaitSend(char* data){
 /// Calculate block check character
 uint8_t getBCC(char* data){
 	uint8_t dv = 0;
-	size_t len = strlen(data) - 2; // BCC and CHARACTER_END
+	size_t len = strlen(data);
 	if(USE_BCC == 0 || len < 3 || len > MAX_MESSAGE){
 		return dv;
 	}
 	dv = 0;
-	for(uint16_t i = 1; i < len; i++)
+	for(uint16_t i = 0; i < len; i++)
 	{
 		dv ^= (uint8_t)data[i];
 	}
