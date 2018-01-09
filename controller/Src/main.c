@@ -37,6 +37,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include "main.h"
 #include "stm32f3xx_hal.h"
 #include "dma.h"
@@ -46,6 +47,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "helper/communicationHelper.h"
+#include "printer.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -98,7 +100,6 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,7 +109,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  uartWaitSend("Ready?\n");
+
+	  //uartWaitSend("Ready?");
 	  printWait();
   }
   /* USER CODE END 3 */

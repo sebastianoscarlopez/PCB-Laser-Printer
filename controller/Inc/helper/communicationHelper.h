@@ -16,7 +16,10 @@
 
 #endif /* COMUNICATIONHELPER_H_ */
 
-uint8_t* uartWaitReceive();
-void uartWaitSend(uint8_t* data);
-uint8_t* getBCC();
+#include "stm32f3xx_hal.h"
+#include <string.h>
+
+char* uartWaitReceive();
+void uartWaitSend(char* data);
+uint8_t getBCC(char* data);
 void waitReady();

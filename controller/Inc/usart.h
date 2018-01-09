@@ -44,6 +44,7 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include "stm32f3xx_hal.h"
 #include "main.h"
 
@@ -62,7 +63,13 @@ extern void _Error_Handler(char *, int);
 void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void uartStartReceive();
+void uartOnReceive();
+void uartReceive();
+void uartSetReady();
+uint8_t uartIsReady();
+char* uartGetData();
+void uartTransmit(char* data, uint8_t bcc);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

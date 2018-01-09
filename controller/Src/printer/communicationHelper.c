@@ -7,13 +7,13 @@
 #include "helper/communicationHelper.h"
 #include "usart.h"
 
-uint8_t bufferAux[MAX_MESSAGE];
+char bufferAux[MAX_MESSAGE];
 
 /// Wait to receive data and it's returned.
-uint8_t* uartWaitReceive()
+char* uartWaitReceive()
 {
 	uint8_t receiveOk = 0;
-	uint8_t* data;
+	char* data;
 	size_t len;
 	do
 	{
@@ -22,9 +22,9 @@ uint8_t* uartWaitReceive()
 		data = uartGetData();
 
 		uint8_t bcc = getBCC(data);
-		len = strlen(&data[1]);
+		len = strlen((char*)&data[1]);
 		receiveOk = bcc == data[0] && data[len] == CHARACTER_END;
-		uartTransmit(receiveOk ? "OK": "FAILED", bcc);
+ 		uartTransmit(receiveOk ? "OK": "FAILED", bcc);
 	}while(!receiveOk);
 
 	data[len] = '\0';
@@ -32,11 +32,11 @@ uint8_t* uartWaitReceive()
 }
 
 /// Send data, return only when data will be transferred.
-void uartWaitSend(uint8_t* data){
+void uartWaitSend(char* data){
 	uint8_t sendOk;
 	size_t len = strlen(data);
 
-	strcpy(bufferAux, data);
+	strcpy((char*)bufferAux, data);
 	bufferAux[len] = CHARACTER_END;
 	bufferAux[len + 1] = '\0';
 	do
@@ -47,14 +47,14 @@ void uartWaitSend(uint8_t* data){
 		waitReady();
 		uartStartReceive();
 
-		uint8_t* dataConfirm = uartGetData();
-		sendOk = dataConfirm[0] == bcc && strcmp(&dataConfirm[1], "OK");
+		char* dataConfirm = uartGetData();
+		sendOk = dataConfirm[0] == bcc && strcmp((char*)&dataConfirm[1], "OK");
 	}while(!sendOk);
 }
 
 
 /// Calculate block check character
-uint8_t getBCC(data){
+uint8_t getBCC(char* data){
 	uint8_t dv = 0;
 	size_t len = strlen(data) - 2; // BCC and CHARACTER_END
 	if(USE_BCC == 0 || len < 3 || len > MAX_MESSAGE){
@@ -63,7 +63,7 @@ uint8_t getBCC(data){
 	dv = 0;
 	for(uint16_t i = 1; i < len; i++)
 	{
-		dv ^= data[i];
+		dv ^= (uint8_t)data[i];
 	}
 	return dv;
 }

@@ -8,9 +8,11 @@
 #ifndef PRINTER_H_
 #define PRINTER_H_
 
-
-
 #endif /* PRINTER_H_ */
+
+#include <string.h>
+#include "stm32f3xx_hal.h"
+#include "helper/communicationHelper.h"
 
 void printWait();
 

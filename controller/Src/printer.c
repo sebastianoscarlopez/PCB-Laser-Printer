@@ -9,7 +9,7 @@
 
 void printWait(){
 	uint8_t isWaiting = 1;
-	uint8_t* data;
+	char* data;
 
 	while(isWaiting){
 		data = uartWaitReceive();

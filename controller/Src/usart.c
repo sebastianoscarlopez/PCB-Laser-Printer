@@ -49,7 +49,7 @@
 #define TX_BUFFER_SIZE          10
 
 uint8_t rxPacket[RX_PACKET_SIZE];
-uint8_t rxBuffer[RX_BUFFER_SIZE];
+char rxBuffer[RX_BUFFER_SIZE];
 uint8_t rxIdxBuffer = 0;
 uint8_t isReady;
 uint8_t txBuffer[TX_BUFFER_SIZE];
@@ -213,31 +213,21 @@ uint8_t uartIsReady(){
 	return isReady != 0;
 }
 
-// TODO: Check digit implementation require app modification.
-uint8_t uartCheckDigit(){
-	return 1;
-}
-
 void uartSetReady(){
 	// Whether dma transfer is incomplete
 	if(hdma_usart2_rx.Instance->CNDTR < RX_PACKET_SIZE){
 		HAL_UART_DMAStop(&huart2);
 		uartOnReceive();
 	}
-	isReady = uartCheckDigit();
-	if(!isReady)
-	{
-	  uartTransmit("RETRANSMIT");
-	  uartStartReceive();
-	}
+	isReady = 1;
 }
 
-uint8_t* uartGetData(){
+char* uartGetData(){
 	return rxBuffer;
 }
 
-void uartTransmit(uint8_t* data, uint8_t bcc){
-	uint8_t len = strlen(data);
+void uartTransmit(char* data, uint8_t bcc){
+	size_t len = strlen(data);
 	txBuffer[0] = bcc;
 	memcpy(&txBuffer[1], data, len + 1);
 	HAL_UART_Transmit_DMA(&huart2, txBuffer, len + 2);

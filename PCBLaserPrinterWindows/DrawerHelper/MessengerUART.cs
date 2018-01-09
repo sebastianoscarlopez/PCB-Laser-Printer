@@ -5,6 +5,7 @@ namespace PCBLaserPrinterCommunication
 {
     public class MessengerUART : IMessenger
     {
+        const int MAX_MESSAGE = 200;
         readonly SerialPort serialPort;
 
         public MessengerUART()
@@ -22,7 +23,7 @@ namespace PCBLaserPrinterCommunication
 
         public void Send(string message)
         {
-            serialPort.Write(message);
+            serialPort.WriteLine(message.Insert(0, getBCC(message).ToString()));
         }
 
         public string Receive()
@@ -67,6 +68,21 @@ namespace PCBLaserPrinterCommunication
                 serialPort.Close();
             }
             return connected;
+        }
+
+        private char getBCC(string data)
+        {
+            char dv = '\0';
+            int len = data.Length - 2; // BCC and CHARACTER_END
+            if (len < 3 || len > MAX_MESSAGE)
+            {
+                return dv;
+            }
+            for (int i = 1; i < len; i++)
+            {
+                dv ^= data[i];
+            }
+            return dv;
         }
     }
 }
