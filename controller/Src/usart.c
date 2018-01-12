@@ -44,10 +44,6 @@
 #include "dma.h"
 
 /* USER CODE BEGIN 0 */
-#define RX_PACKET_SIZE          10
-#define RX_BUFFER_SIZE          100
-#define TX_BUFFER_SIZE          100
-
 uint8_t rxPacket[RX_PACKET_SIZE];
 char rxBuffer[RX_BUFFER_SIZE];
 uint8_t rxIdxBuffer = 0;
@@ -227,10 +223,10 @@ char* uartGetData(){
 }
 
 void uartTransmit(char* data){
-	size_t len = strlen(data);
 	txBuffer[0] = data[0];
-	strcpy((char*)&txBuffer[1], data);
-	HAL_UART_Transmit_DMA(&huart2, txBuffer, len + 1);
+	strcpy((char*)&txBuffer[1], &data[1]);
+	size_t len = strlen(&data[1]) + 1;
+	HAL_UART_Transmit_DMA(&huart2, txBuffer, len);
 }
 
 

@@ -61,10 +61,14 @@ namespace Gerber
 
         public void print()
         {
-            if (printer.Test())
+            if (printer.Connect())
             {
                 viewer.startPrinter();
-                printer.Print(metaData.MetaData);
+                printer.Print(metaData.MetaData)
+                    .Subscribe(progress =>
+                    {
+                        Console.WriteLine(progress);
+                    });
             }
             else
             {

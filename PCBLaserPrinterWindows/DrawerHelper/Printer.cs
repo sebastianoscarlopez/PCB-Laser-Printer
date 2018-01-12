@@ -8,14 +8,13 @@ namespace PCBLaserPrinterCommunication
     public class Printer
     {
         IMessenger messenger;
-        int unit;
 
         public Printer()
         {
             messenger = new MessengerUART();
         }
 
-        public bool Test()
+        public bool Connect()
         {
             return messenger.Connect();
         }
@@ -26,16 +25,24 @@ namespace PCBLaserPrinterCommunication
             {
                 try
                 {
-                    messenger.Send("startPrinter");
+                    var config = new Config();
+                    messenger.Send("printStart");
                     var response = messenger.Receive();
-                    var match = new Regex(@"Unit:(\d+)").Match(response);
-                    unit = int.Parse(match.Groups[0].Value); // Controller unit in nanometers
-                    var unitRelation = metaData.UnitInMicroMeters * unit / Math.Pow(10, metaData.TrailingDigits + 3);
+                    var match = new Regex(@"Controller Unit:(\d+)").Match(response);
+                    config.ControllerUnit = int.Parse(match.Groups[1].Value);
 
-                    // Width in controller unit
-                    var width = metaData.Bounds.Width * unitRelation;
-                    var height = metaData.Bounds.Height * unitRelation;
-                    messenger.Send(string.Format("size:{0}x{1}", width, height));
+                    response = messenger.Receive();
+                    match = new Regex(@"MotorRevolutionAverage:(\d+)").Match(response);
+                    config.MotorRevolutionAverage = int.Parse(match.Groups[1].Value);
+
+                    config.RatioConvert = (metaData.UnitInMicroMeters / Math.Pow(10, metaData.TrailingDigits)) *
+                        (config.PrinterAngle / 360.0 * config.MotorRevolutionAverage / config.PrinterWidth) /
+                        (config.ControllerUnit * Math.Pow(10, -6));
+                    
+                    config.Width = (int)(metaData.Bounds.Width * config.RatioConvert);
+                    config.Height = (int)(metaData.Bounds.Height * config.RatioConvert) * -1;
+                    messenger.Send(config.Width.ToString());
+                    messenger.Send(config.Height.ToString());
 
                     response = messenger.Receive();
                 }

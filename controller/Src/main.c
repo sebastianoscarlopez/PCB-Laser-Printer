@@ -37,6 +37,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include <printer/presenter.h>
 #include <string.h>
 #include "main.h"
 #include "stm32f3xx_hal.h"
@@ -47,7 +48,6 @@
 
 /* USER CODE BEGIN Includes */
 #include "helper/communicationHelper.h"
-#include "printer.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -110,8 +110,15 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 
-	  //uartWaitSend("Ready?");
-	  printWait();
+	volatile uint8_t isWaitingConnect = 1;
+	char* data;
+
+	do{
+		data = uartWaitReceive();
+		isWaitingConnect = strcmp("Ready?", data);
+	}while(isWaitingConnect);
+
+	printWait();
   }
   /* USER CODE END 3 */
 

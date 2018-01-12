@@ -56,6 +56,10 @@ extern UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN Private defines */
 
+#define RX_PACKET_SIZE          10
+#define RX_BUFFER_SIZE          100
+#define TX_BUFFER_SIZE          100
+
 /* USER CODE END Private defines */
 
 extern void _Error_Handler(char *, int);

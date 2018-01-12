@@ -8,7 +8,7 @@ namespace PCBLaserPrinterCommunication
 {
     public interface IMessenger
     {
-        void Send(string message);
+        bool Send(string message);
         string Receive();
         bool Connect();
     }

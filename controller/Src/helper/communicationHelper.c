@@ -13,8 +13,8 @@ char bufferAux[MAX_MESSAGE];
 char* uartWaitReceive()
 {
 	uint8_t receiveOk = 0;
-	char* data;
-	size_t len;
+	volatile char* data;
+	size_t lenData;
 	do
 	{
 		uartStartReceive();
@@ -22,12 +22,17 @@ char* uartWaitReceive()
 		data = uartGetData();
 
 		uint8_t bcc = getBCC(&data[1]);
-		len = strlen((char*)&data[1]);
-		receiveOk = bcc == data[0] && data[len] == CHARACTER_END;
- 		uartTransmit(receiveOk ? "OK": "FAILED");
+		lenData = strlen((char*)&data[1]);
+		receiveOk = bcc == data[0] && data[lenData] == CHARACTER_END;
+		volatile char response[7];
+		strcpy(response, receiveOk ? "OK": "FAILED");
+		size_t lenResponse = strlen(response);
+		response[lenResponse] = CHARACTER_END;
+		response[lenResponse + 1] = '\0';
+ 		uartTransmit(response);
 	}while(!receiveOk);
 
-	data[len] = '\0';
+	data[lenData] = '\0';
 	return &data[1];
 }
 
@@ -36,7 +41,7 @@ void uartWaitSend(char* data){
 	uint8_t sendOk;
 	size_t len = strlen(data);
 
-	strcpy((char*)bufferAux[1], data);
+	strcpy(&bufferAux[1], data);
 	bufferAux[len + 1] = CHARACTER_END;
 	bufferAux[len + 2] = '\0';
 	do
@@ -47,9 +52,13 @@ void uartWaitSend(char* data){
 		uartTransmit(bufferAux);
 		waitReady();
 		uartStartReceive();
-
+		waitReady();
 		char* dataConfirm = uartGetData();
-		sendOk = dataConfirm[0] == bcc && strcmp((char*)&dataConfirm[1], "OK");
+		if(dataConfirm[2] == CHARACTER_END)
+		{
+			dataConfirm[2] = '\0';
+		}
+		sendOk = strcmp(dataConfirm, "OK") == 0;
 	}while(!sendOk);
 }
 
@@ -71,7 +80,7 @@ uint8_t getBCC(char* data){
 
 /// Wait for idle communication
 void waitReady(){
-	while(!uartIsReady()){
-		HAL_Delay(1);
-	}
+	do{
+		HAL_Delay(100);
+	}while(!uartIsReady());
 }

@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.IO.Ports;
 using System.Globalization;
+using System.Threading;
 
 namespace PCBLaserPrinterCommunication
 {
     public class MessengerUART : IMessenger
     {
         const int MAX_MESSAGE = 200;
+        const char CHARACTER_END = '\n';
         readonly SerialPort serialPort;
 
         public MessengerUART()
@@ -16,22 +18,58 @@ namespace PCBLaserPrinterCommunication
                 BaudRate = 9600,
                 Parity = Parity.None,
                 DataBits = 8,
-                ReadTimeout = 100,
+                ReadTimeout = 1000,
                 StopBits = StopBits.One,
                 WriteTimeout = 100
             };
         }
 
-        public void Send(string message)
+        public bool Send(string message)
         {
-            message += "\n";
+            Thread.Sleep(100);
+            message += CHARACTER_END;
             var msg = string.Format("{0}{1}", getBCC(message).ToString(CultureInfo.InvariantCulture), message);
-            serialPort.Write(msg);
+
+            bool receiveOk = false;
+            int maxRetries = 5;
+            do
+            {
+                try
+                {
+                    serialPort.Write(msg);
+                    var data = serialPort.ReadLine();
+                    receiveOk = data == "OK";
+                }
+                catch
+                {
+                    receiveOk = false;
+                }
+            } while (!receiveOk && --maxRetries > 0);
+            return receiveOk;
         }
 
         public string Receive()
         {
-            return serialPort.ReadLine();
+            Thread.Sleep(10);
+            string data = null;
+            bool receiveOk = false;
+            int maxRetries = 5;
+            do
+            {
+                try
+                {
+                    data = serialPort.ReadLine();
+                    var bcc = getBCC(data.Substring(1) + CHARACTER_END);
+                    receiveOk = bcc == data[0];
+                    Thread.Sleep(100);
+                    serialPort.WriteLine(receiveOk ? "OK" : "FAILED");
+                }
+                catch
+                {
+                    receiveOk = false;
+                }
+            } while (!receiveOk && --maxRetries > 0);
+            return data.Substring(1);
         }
 
         public bool Connect()
@@ -50,14 +88,9 @@ namespace PCBLaserPrinterCommunication
                     serialPort.Open();
                     if (serialPort.IsOpen)
                     {
-                        Send("printStart");
-                        while (!connected)
-                        {
-                            var response = Receive();
-                            connected = response.StartsWith("Yes");
-                        }
+                        Send("...");
+                        connected = Send("Ready?");
                     }
-                    
                 } catch
                 {
                     if (serialPort.IsOpen)
