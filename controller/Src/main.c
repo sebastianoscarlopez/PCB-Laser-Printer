@@ -9,7 +9,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2017 STMicroelectronics
+  * COPYRIGHT(c) 2018 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -37,8 +37,6 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include <printer/presenter.h>
-#include <string.h>
 #include "main.h"
 #include "stm32f3xx_hal.h"
 #include "dma.h"
@@ -66,7 +64,18 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+uint32_t capture[20];
+uint16_t i = 0;
 
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	capture[i++] = __HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_2);
+//	capture[i++] = __HAL_TIM_GET_COUNTER(&htim2);
+	if(i==20)
+	{
+		i = 0;
+	}
+}
 /* USER CODE END 0 */
 
 int main(void)
@@ -97,9 +106,22 @@ int main(void)
   MX_DMA_Init();
   MX_TIM2_Init();
   MX_USART2_UART_Init();
+  MX_TIM3_Init();
 
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_Delay(100);
+  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);
+
+  HAL_Delay(5000);
+  //HAL_TIM_OC_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_OC_Start_DMA(&htim2, TIM_CHANNEL_1, capture, 10);
+
+  while (1)
+  {
+
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -161,9 +183,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_TIM2;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_TIM2
+                              |RCC_PERIPHCLK_TIM34;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
-  PeriphClkInit.Tim2ClockSelection = RCC_TIM2CLK_HCLK;
+  PeriphClkInit.Tim2ClockSelection = RCC_TIM2CLK_PLLCLK;
+  PeriphClkInit.Tim34ClockSelection = RCC_TIM34CLK_HCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
