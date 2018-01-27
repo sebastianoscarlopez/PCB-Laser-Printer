@@ -42,6 +42,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "printer/controller.h"
+#include "helper/communicationHelper.h"
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/

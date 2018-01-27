@@ -8,14 +8,9 @@
 #include "printer/config.h"
 
 uint16_t controllerUnit = 6944; // 1/144Mhz in picoseconds
+uint16_t mirrors = 2;
 uint16_t _width;
 uint16_t _height;
-
-/// Return unit based in pwm counter that is relationed on average motor speed
-uint16_t getControllerUnit()
-{
-	return controllerUnit;
-}
 
 /// Board width in controllerUnit
 void setWidth(uint16_t width){
@@ -27,4 +22,5 @@ void setHeight(uint16_t height)
 {
 	_height = height;
 }
+
 

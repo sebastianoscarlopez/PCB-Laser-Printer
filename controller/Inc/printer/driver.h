@@ -13,6 +13,9 @@
 #endif /* PRINTER_DRIVER_H_ */
 
 #include "stm32f3xx_hal.h"
+#include "tim.h"
+#include "printer/config.h"
+
 void DriverON();
 void DriverCalculateMotorRevolutionAverage();
 uint16_t DriverGetMotorRevolutionAverage();

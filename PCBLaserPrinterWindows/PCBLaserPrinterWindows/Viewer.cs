@@ -10,6 +10,7 @@ namespace PCBLaserPrinterWindows
     public partial class Viewer : Form, IGerberViewer
     {
         readonly GerberPresenter presenter;
+        bool hasPreview = false;
 
         public Viewer()
         {
@@ -23,6 +24,7 @@ namespace PCBLaserPrinterWindows
             .Subscribe(_ => presenter.processGerber(txtFile.Text));
             ViewerBox.Controls.Add(PreviewBox);
             PreviewBox_UpdateLocation();
+            PreviewBox.Image = null;
         }
 
         private void Viewer_Load(object sender, EventArgs e)
@@ -46,7 +48,8 @@ namespace PCBLaserPrinterWindows
         public void parseComplete()
         {
             hideStatus();
-            presenter.startDrawCanvas();
+            hasPreview = false;
+            presenter.startDrawCanvas(new Size(PreviewBox.Size.Width, PreviewBox.Size.Height));
         }
 
         public void parseError(Exception exception)
@@ -69,13 +72,23 @@ namespace PCBLaserPrinterWindows
 
         public void refreshCanvas(Bitmap bitmap, Rectangle bounds, int scale)
         {
-            ViewerBox.Image = bitmap;
+            var box = ViewerBox;
+            if (!hasPreview)
+            {
+                box = PreviewBox;
+            }
+            box.Image = bitmap;
             statusBar.Visible = true;
             lblStatus.Text = string.Format("dpi:{0} size:{1}x{2} scale:1/{3}", 
                 bitmap.HorizontalResolution.ToString(CultureInfo.InvariantCulture),
                 bitmap.Width, bitmap.Height,
                 scale);
             lblStatus.Visible = true;
+            if (!hasPreview)
+            {
+                presenter.startDrawCanvas(new Size());
+                hasPreview = true;
+            }
         }
 
         public void startPrinter()

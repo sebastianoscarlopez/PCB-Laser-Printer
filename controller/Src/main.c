@@ -45,7 +45,6 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include "helper/communicationHelper.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/

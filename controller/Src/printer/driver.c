@@ -5,13 +5,10 @@
  *      Author: sebas
  */
 #include "printer/driver.h"
-#include "tim.h"
-#include "printer/config.h"
 
 uint16_t driverGetMotorRevolutionAverage;
 uint32_t capture[20];
 uint16_t i = 0;
-uint16_t cUnit2;
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -30,14 +27,13 @@ void DriverON()
 	// TODO: DriverON
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	HAL_TIM_IC_Start_DMA(&htim2, TIM_CHANNEL_1, (uint32_t*)capture, 10);
-	cUnit2 = getControllerUnit();
 }
 
 /// A motor revolution in microseconds
 void DriverCalculateMotorRevolutionAverage()
 {
 	// TODO: DriverCalculateMotorRevolutionAverage
-	driverGetMotorRevolutionAverage = (double)capture[0]/1000000.0 * cUnit2;
+	driverGetMotorRevolutionAverage = (double)capture[0]/1000000.0 * controllerUnit;
 }
 
 uint16_t DriverGetMotorRevolutionAverage()

@@ -5,7 +5,7 @@
  *      Author: sebas
  */
 
-#include "printer/presenter.h"
+#include "printer/controller.h"
 
 void printWait(){
 	uint8_t isWaiting = 1;
@@ -24,8 +24,7 @@ void printStart(){
 
 	DriverON();
 
-	uint16_t cUnit = getControllerUnit();
-	sprintf(str, "Controller Unit:%u", cUnit);
+	sprintf(str, "Controller Unit:%u", controllerUnit);
 	uartWaitSend(str);
 
 	DriverCalculateMotorRevolutionAverage();
@@ -41,7 +40,11 @@ void printStart(){
 	strToUint16_t(data, &height);
 	setWidth(width);
 	setHeight(height);
-	uartWaitSend("LLEGO");
+
+	uint16_t rowIdx = width, columnIdx = 0; // Start in left upper corner
+	do{
+
+	}while(rowIdx > 0);
 }
 
 void sendUnit()
