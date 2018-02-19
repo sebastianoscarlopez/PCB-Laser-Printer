@@ -13,8 +13,8 @@ namespace Gerber
     /// </summary>
     public class MetaDataAdmin
     {
-        public GerberMetaDataDTO MetaData;
-        private GerberMetaDataDTO MetaDataBase = null;
+        public GerberMetaDataDTO MetaDataDTO;
+        private GerberMetaDataDTO MetaDataBaseDTO = null;
         private GerberHeaderDTO Header { get; set; }
         private List<GerberTraceDTO> Traces { get; set; }
         private List<KeyValuePair<char, MetaData>> metadataCreators = new List<KeyValuePair<char, GerberMetaData.MetaData>>()
@@ -42,19 +42,28 @@ namespace Gerber
         /// <param name="dpi">Dots per inch. It's recommendable an initial value between 48 and 192, a higher value is a memory exponencial increment</param>
         public IObservable<int> GenerateMetaData(int dpi)
         {
+            return GenerateMetaData(dpi, null);
+        }
+        public IObservable<int> GenerateMetaData(int dpi, Rectangle? area)
+        {
             return Observable.Create((IObserver<int> observer) =>
             {
-                MetaData = new GerberMetaDataDTO();
-                MetaDataBase = MetaData;
-                MetaData.UnitInMicroMeters = Header.UnitInMicroMeters;
-                MetaData.TrailingDigits = Header.TrailingDigits;
-                MetaData.DPI = dpi;
-                MetaData.Scale = (int)Math.Pow(10, Header.TrailingDigits) / dpi;
-                MetaData.Bounds = CalculateBounds();
-                MetaData.PolarityLayers.Add(new PlarityLayerDTO()
+                MetaDataDTO = new GerberMetaDataDTO
+                {
+                    UnitInMicroMeters = Header.UnitInMicroMeters,
+                    TrailingDigits = Header.TrailingDigits,
+                    DPI = dpi,
+                    Scale = (int)Math.Pow(10, Header.TrailingDigits) / dpi,
+                    Bounds = area ?? CalculateBounds()
+                };
+                MetaDataDTO.PolarityLayers.Add(new PlarityLayerDTO()
                 {
                     IsDarkPolarity = true
                 });
+                if (MetaDataBaseDTO == null)
+                {
+                    MetaDataBaseDTO = MetaDataDTO;
+                }
                 var counter = 0;
                 Traces.ToObservable().Subscribe(
                     trace =>
@@ -77,10 +86,10 @@ namespace Gerber
         {
             var aperture = Header.Apertures.Where(a => a.Aperture == trace.Aperture).Single();
             MetaData metadata = metadataCreators.Single(m => m.Key == aperture.Shape).Value;
-            metadata.Create(MetaData, trace, aperture,
+            metadata.Create(MetaDataBaseDTO, MetaDataDTO, trace, aperture,
                 layerIndex,
-                MetaData.Bounds.Top / MetaData.Scale + 1,
-                MetaData.Bounds.Bottom / MetaData.Scale - 1);
+                MetaDataDTO.Bounds.Top / MetaDataDTO.Scale + 1,
+                MetaDataDTO.Bounds.Bottom / MetaDataDTO.Scale - 1);
         }
 
         /// <summary>

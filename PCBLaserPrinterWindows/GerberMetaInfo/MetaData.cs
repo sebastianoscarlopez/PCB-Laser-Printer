@@ -10,6 +10,7 @@ namespace GerberMetaData
 
         /// <summary>
         /// It do metadata processing the draw
+        /// It stablish the top and bottom row affected, wheter haven't affected row return doing nothing
         /// </summary>
         /// <param name="metaData">Meta data to update</param>
         /// <param name="trace">Trace data</param>
@@ -17,7 +18,7 @@ namespace GerberMetaData
         /// <param name="layerIndex">Layer Index</param>
         /// <param name="rowFrom">Top row index </param>
         /// <param name="rowTo">Bottom row index</param>
-        virtual public void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTo)
+        virtual public void Create(GerberMetaDataDTO metaDataBase, GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTo)
         {
             topRow = trace.AbsolutePointEnd.Y + aperture.Modifiers[aperture.Shape == 'R' && aperture.Modifiers.Count > 1 ? 1 : 0] / 2;
             bottomRow = topRow - aperture.Modifiers[aperture.Shape == 'R' && aperture.Modifiers.Count > 1 ? 1 : 0];
@@ -31,6 +32,9 @@ namespace GerberMetaData
             {
                 bottomRow = rowTo;
             }
+            // When top and bottom are inverter means it metadata is unnecesary draw
+            if (topRow < bottomRow)
+                return;
         }
 
         /// <summary>

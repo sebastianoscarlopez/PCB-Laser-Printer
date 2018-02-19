@@ -55,7 +55,10 @@ namespace Gerber
                             {
                                 if (c.Left == c.Right)
                                 {
-                                    image.SetPixel(c.Left + offsetX, r.RowIndex + offsetY, color);
+                                    if (c.Left + offsetX < image.Width && r.RowIndex + offsetY < image.Height)
+                                    {
+                                        image.SetPixel(c.Left + offsetX, r.RowIndex + offsetY, color);
+                                    }
                                 }
                                 else
                                 {

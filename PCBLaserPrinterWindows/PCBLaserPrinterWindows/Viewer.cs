@@ -2,8 +2,14 @@
 using System;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows.Forms;
+using GerberDTO;
+using System.Windows.Threading;
+using System.Reactive.Concurrency;
+using System.Collections.Generic;
 
 namespace PCBLaserPrinterWindows
 {
@@ -11,6 +17,7 @@ namespace PCBLaserPrinterWindows
     {
         readonly GerberPresenter presenter;
         bool hasPreview = false;
+        Subject<ZoomDTO> zoomSubject = new Subject<ZoomDTO>();
 
         public Viewer()
         {
@@ -25,6 +32,44 @@ namespace PCBLaserPrinterWindows
             ViewerBox.Controls.Add(PreviewBox);
             PreviewBox_UpdateLocation();
             PreviewBox.Image = null;
+
+            zoomSubject
+                .Buffer(TimeSpan.FromMilliseconds(50))
+                .Where(lz => lz.Count() > 0)
+                .Select(lz => new ZoomDTO
+                {
+                    x = lz.Max(z => z.x),
+                    y = lz.Max(z => z.y),
+                    zoom = lz.Sum(z => z.zoom)
+                })
+                .ObserveOn(Dispatcher.CurrentDispatcher)
+                .SubscribeOn(ThreadPoolScheduler.Instance)
+                .Subscribe(z => presenter.Zoom(z));
+        }
+
+        /// <summary>
+        /// This must be overridden in the Form because the pictureBox never receives MouseWheel messages
+        /// </summary>
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+
+            if (hasPreview)
+            {
+                Point pt_MouseAbs = Control.MousePosition;
+                Control i_Ctrl = ViewerBox;
+                Rectangle r_Ctrl = i_Ctrl.RectangleToScreen(i_Ctrl.ClientRectangle);
+                if (!r_Ctrl.Contains(pt_MouseAbs))
+                {
+                    base.OnMouseWheel(e);
+                    return; // mouse position is outside the picturebox
+                }
+
+                // Mouse position relative to the pictureBox
+                Point pt_MouseRel = ViewerBox.PointToClient(pt_MouseAbs);
+                // Presenter receive zoom request
+                zoomSubject.OnNext(new ZoomDTO { x = pt_MouseRel.X, y = pt_MouseAbs.Y, zoom = e.Delta });
+
+            }
         }
 
         private void Viewer_Load(object sender, EventArgs e)

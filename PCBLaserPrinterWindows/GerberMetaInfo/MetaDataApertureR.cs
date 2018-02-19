@@ -10,10 +10,9 @@ namespace GerberMetaData
     /// </summary>
     class MetaDataApertureR : MetaData
     {
-        public override void Create(GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTo)
+        public override void Create(GerberMetaDataDTO metaDataBase, GerberMetaDataDTO metaData, GerberTraceDTO trace, GerberApertureDTO aperture, int layerIndex, int rowFrom, int rowTo)
         {
-            base.Create(metaData, trace, aperture, layerIndex, rowFrom, rowTo);
-
+            base.Create(metaDataBase, metaData, trace, aperture, layerIndex, rowFrom, rowTo);
             var leftColumn = trace.AbsolutePointEnd.X - aperture.Modifiers[0] / 2;
             var rightColumn = leftColumn + aperture.Modifiers[0];
             leftColumn /= metaData.Scale;
